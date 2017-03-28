@@ -1,8 +1,6 @@
 import aes
-import binascii
 import hashlib
 import hmac
-import random
 import struct
 from kmsBase import kmsBase
 from kmsRequestV5 import kmsRequestV5

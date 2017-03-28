@@ -2,7 +2,6 @@ import aes
 import binascii
 import hashlib
 import random
-import struct
 from kmsBase import kmsBase
 from structure import Structure
 
@@ -130,8 +129,8 @@ class kmsRequestV5(kmsBase):
 		response['padding'] = self.getResponsePadding(bodyLength)
 
 		if self.config['debug']:
-			print "KMS V%d Response: %s" % (self.ver, response.dump())
-			print "KMS V%d Structue Bytes: %s" % (self.ver, binascii.b2a_hex(str(response)))
+			print("KMS V%d Response: %s" % (self.ver, response.dump()))
+			print("KMS V%d Structue Bytes: %s" % (self.ver, binascii.b2a_hex(str(response))))
 
 		return str(response)
 	
@@ -165,7 +164,7 @@ class kmsRequestV5(kmsBase):
 		request['message'] = message
 
 		if self.config['debug']:
-			print "Request V%d Data: %s" % (self.ver, request.dump())
-			print "Request V%d: %s" % (self.ver, binascii.b2a_hex(str(request)))
+			print("Request V%d Data: %s" % (self.ver, request.dump()))
+			print("Request V%d: %s" % (self.ver, binascii.b2a_hex(str(request))))
 
 		return request

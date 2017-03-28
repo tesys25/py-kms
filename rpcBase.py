@@ -1,5 +1,3 @@
-import struct
-import uuid
 
 class rpcBase:
 	packetType = {

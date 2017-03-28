@@ -1,8 +1,6 @@
 import binascii
 import kmsBase
 import rpcBase
-import struct
-import uuid
 
 from dcerpc import MSRPCRequestHeader, MSRPCRespHeader
 
@@ -11,8 +9,8 @@ class handler(rpcBase.rpcBase):
 		request = MSRPCRequestHeader(self.data)
 
 		if self.config['debug']:
-			print "RPC Message Request Bytes:", binascii.b2a_hex(self.data)
-			print "RPC Message Request:", request.dump()
+			print("RPC Message Request Bytes:", binascii.b2a_hex(self.data))
+			print("RPC Message Request:", request.dump())
 
 		return request
 
@@ -37,8 +35,8 @@ class handler(rpcBase.rpcBase):
 		response['pduData'] = responseData
 
 		if self.config['debug']:
-			print "RPC Message Response:", response.dump()
-			print "RPC Message Response Bytes:", binascii.b2a_hex(str(response))
+			print("RPC Message Response:", response.dump())
+			print("RPC Message Response Bytes:", binascii.b2a_hex(str(response)))
 
 		return response
 
@@ -55,8 +53,8 @@ class handler(rpcBase.rpcBase):
 		request['pduData'] = str(self.data)
 
 		if self.config['debug']:
-			print "RPC Message Request:", request.dump()
-			print "RPC Message Request Bytes:", binascii.b2a_hex(str(request))
+			print("RPC Message Request:", request.dump())
+			print("RPC Message Request Bytes:", binascii.b2a_hex(str(request)))
 
 		return request
 

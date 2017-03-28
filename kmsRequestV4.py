@@ -1,5 +1,4 @@
 import binascii
-import struct
 import time
 from kmsBase import kmsBase
 from structure import Structure
@@ -94,8 +93,8 @@ class kmsRequestV4(kmsBase):
 		response['padding'] = self.getResponsePadding(bodyLength)
 
 		if self.config['debug']:
-			print "KMS V4 Response:", response.dump()
-			print "KMS V4 Response Bytes:", binascii.b2a_hex(str(response))
+			print("KMS V4 Response:", response.dump())
+			print("KMS V4 Response Bytes:", binascii.b2a_hex(str(response)))
 
 		return str(response)
 
@@ -115,7 +114,7 @@ class kmsRequestV4(kmsBase):
 		request['padding'] = self.getResponsePadding(bodyLength)
 
 		if self.config['debug']:
-			print "Request V4 Data:", request.dump()
-			print "Request V4:", binascii.b2a_hex(str(request))
+			print("Request V4 Data:", request.dump())
+			print("Request V4:", binascii.b2a_hex(str(request)))
 
 		return request

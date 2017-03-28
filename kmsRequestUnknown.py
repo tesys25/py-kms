@@ -1,3 +1,4 @@
+import struct
 from kmsBase import kmsBase
 
 class kmsRequestUnknown(kmsBase):

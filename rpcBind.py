@@ -1,6 +1,5 @@
 import binascii
 import rpcBase
-import struct
 import uuid
 
 from dcerpc import MSRPCHeader, MSRPCBindAck
@@ -72,8 +71,8 @@ class handler(rpcBase.rpcBase):
 		request = MSRPCHeader(self.data)
 
 		if self.config['debug']:
-			print "RPC Bind Request Bytes:", binascii.b2a_hex(self.data)
-			print "RPC Bind Request:", request.dump(), MSRPCBind(request['pduData']).dump()
+			print("RPC Bind Request Bytes:", binascii.b2a_hex(self.data))
+			print("RPC Bind Request:", request.dump(), MSRPCBind(request['pduData']).dump())
 
 		return request
 
@@ -114,8 +113,8 @@ class handler(rpcBase.rpcBase):
 			response['ctx_items'] += str(resp)
 
 		if self.config['debug']:
-			print "RPC Bind Response:", response.dump()
-			print "RPC Bind Response Bytes:", binascii.b2a_hex(str(response))
+			print("RPC Bind Response:", response.dump())
+			print("RPC Bind Response Bytes:", binascii.b2a_hex(str(response)))
 
 		return response
 
@@ -154,8 +153,8 @@ class handler(rpcBase.rpcBase):
 		request['pduData'] = str(bind)
 
 		if self.config['debug']:
-			print "RPC Bind Request:", request.dump(), MSRPCBind(request['pduData']).dump()
-			print "RPC Bind Request Bytes:", binascii.b2a_hex(str(request))
+			print("RPC Bind Request:", request.dump(), MSRPCBind(request['pduData']).dump())
+			print("RPC Bind Request Bytes:", binascii.b2a_hex(str(request)))
 
 		return request
 

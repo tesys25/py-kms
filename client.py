@@ -4,12 +4,11 @@ import datetime
 import random
 import socket
 import string
-import struct
 import sys
 import uuid
 import filetimes, rpcBind, rpcRequest
 
-from dcerpc import MSRPCHeader, MSRPCBindNak, MSRPCRequestHeader, MSRPCRespHeader
+from dcerpc import MSRPCHeader, MSRPCBindNak, MSRPCRespHeader
 from kmsBase import kmsBase, UUID
 from kmsRequestV4 import kmsRequestV4
 from kmsRequestV5 import kmsRequestV5
@@ -34,36 +33,36 @@ def main():
 		config['verbose'] = True
 	updateConfig()
 	s = socket.socket()
-	print "Connecting to %s on port %d..." % (config['ip'], config['port'])
+	print("Connecting to %s on port %d..." % (config['ip'], config['port']))
 	s.connect((config['ip'], config['port']))
 	if config['verbose']:
-		print "Connection successful!"
+		print("Connection successful!")
 	binder = rpcBind.handler(None, config)
 	RPC_Bind = str(binder.generateRequest())
 	if config['verbose']:
-		print "Sending RPC bind request..."
+		print("Sending RPC bind request...")
 	s.send(RPC_Bind)
 	try:
 		bindResponse = s.recv(1024)
-	except socket.error, e:
+	except socket.error as e:
 		if e[0] == 104:
-			print "Error: Connection reset by peer. Exiting..."
+			print("Error: Connection reset by peer. Exiting...")
 			sys.exit()
 		else:
 			raise
 	if bindResponse == '' or not bindResponse:
-		print "No data received! Exiting..."
+		print("No data received! Exiting...")
 		sys.exit()
 	packetType = MSRPCHeader(bindResponse)['type']
 	if packetType == rpcBase.packetType['bindAck']:
 		if config['verbose']:
-			print "RPC bind acknowledged."
+			print("RPC bind acknowledged.")
 		kmsRequest = createKmsRequest()
 		requester = rpcRequest.handler(kmsRequest, config)
 		s.send(str(requester.generateRequest()))
 		response = s.recv(1024)
 		if config['debug']:
-			print "Response:", binascii.b2a_hex(response)
+			print("Response:", binascii.b2a_hex(response))
 		parsed = MSRPCRespHeader(response)
 		kmsData = readKmsResponse(parsed['pduData'], kmsRequest, config)
 		kmsResp = kmsData['response']
@@ -71,17 +70,17 @@ def main():
 			hwid = kmsData['hwid']
 		except:
 			hwid = None
-		print "KMS Host ePID:", kmsResp['kmsEpid']
+		print("KMS Host ePID:", kmsResp['kmsEpid'])
 		if hwid is not None:
-			print "KMS Host HWID:", binascii.b2a_hex(hwid).upper()
-		print "KMS Host Current Client Count:", kmsResp['currentClientCount']
-		print "KMS VL Activation Interval:", kmsResp['vLActivationInterval']
-		print "KMS VL Renewal Interval:", kmsResp['vLRenewalInterval']
+			print("KMS Host HWID:", binascii.b2a_hex(hwid).upper())
+		print("KMS Host Current Client Count:", kmsResp['currentClientCount'])
+		print("KMS VL Activation Interval:", kmsResp['vLActivationInterval'])
+		print("KMS VL Renewal Interval:", kmsResp['vLRenewalInterval'])
 	elif packetType == rpcBase.packetType['bindNak']:
-		print MSRPCBindNak(bindResponse).dump()
+		print(MSRPCBindNak(bindResponse).dump())
 		sys.exit()
 	else:
-		print "Something went wrong."
+		print("Something went wrong.")
 		sys.exit()
 
 def checkConfig():
@@ -89,11 +88,11 @@ def checkConfig():
 		try:
 			uuid.UUID(config['cmid'])
 		except:
-			print "Error: Bad CMID. Exiting..."
+			print("Error: Bad CMID. Exiting...")
 			sys.exit()
 	if config['machineName'] is not None:
 		if len(config['machineName']) < 2 or len(config['machineName']) > 63:
-			print "Error: machineName must be between 2 and 63 characters in length."
+			print("Error: machineName must be between 2 and 63 characters in length.")
 			sys.exit()
 
 def updateConfig():
@@ -160,12 +159,12 @@ def createKmsRequestBase():
 	requestDict['previousClientMachineId'] = '\0' * 16 #requestDict['clientMachineId'] # I'm pretty sure this is supposed to be a null UUID.
 	requestDict['requiredClientCount'] = config['RequiredClientCount']
 	requestDict['requestTime'] = filetimes.dt_to_filetime(datetime.datetime.utcnow())
-	requestDict['machineName'] = (config['machineName'] if (config['machineName'] is not None) else ''.join(random.choice(string.letters + string.digits) for i in range(random.randint(2,63)))).encode('utf-16le')
+	requestDict['machineName'] = (config['machineName'] if (config['machineName'] is not None) else ''.join(random.choice(string.ascii_letters + string.digits) for i in range(random.randint(2,63)))).encode('utf-16le')
 	requestDict['mnPad'] = '\0'.encode('utf-16le') * (63 - len(requestDict['machineName'].decode('utf-16le')))
 
 	# Debug Stuff
 	if config['debug']:
-		print "Request Base Dictionary:", requestDict.dump()
+		print("Request Base Dictionary:", requestDict.dump())
 
 	return requestDict
 
@@ -188,23 +187,23 @@ def createKmsRequest():
 
 def readKmsResponse(data, request, config):
 	if config['KMSProtocolMajorVersion'] == 4:
-		print "Received V4 response"
+		print("Received V4 response")
 		response = readKmsResponseV4(data, request)
 	elif config['KMSProtocolMajorVersion'] == 5:
-		print "Received V5 response"
+		print("Received V5 response")
 		response = readKmsResponseV5(data)
 	elif config['KMSProtocolMajorVersion'] == 6:
-		print "Received V6 response"
+		print("Received V6 response")
 		response = readKmsResponseV6(data)
 	else:
-		print "Unhandled response version: %d.%d" % (config['KMSProtocolMajorVersion'], config['KMSProtocolMinorVersion'])
-		print "I'm not even sure how this happened..."
+		print("Unhandled response version: %d.%d" % (config['KMSProtocolMajorVersion'], config['KMSProtocolMinorVersion']))
+		print("I'm not even sure how this happened...")
 	return response
 
 def readKmsResponseV4(data, request):
 	response = kmsRequestV4.ResponseV4(data)
 	hashed = kmsRequestV4(data, config).generateHash(bytearray(str(response['response'])))
-	print "Response Hash has expected value:", hashed == response['hash']
+	print("Response Hash has expected value:", hashed == response['hash'])
 	return response
 
 def readKmsResponseV5(data):
