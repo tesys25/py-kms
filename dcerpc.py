@@ -156,9 +156,6 @@ rpc_status_codes = {
     0x1C000025: 'nca_s_fault_no_client_stub'
 }
 
-class Exception(Exception):
-    pass
-
 # Context Item
 class CtxItem(Structure):
     structure = (

@@ -129,7 +129,7 @@ class Structure:
 				raise
 			if self.alignment:
 				if len(data) % self.alignment:
-					data += ('\x00'*self.alignment)[:-(len(data) % self.alignment)]
+					data += (b'\x00'*self.alignment)[:-(len(data) % self.alignment)]
 			
 		#if len(data) % self.alignment: data += ('\x00'*self.alignment)[:-(len(data) % self.alignment)]
 		return data
@@ -253,9 +253,9 @@ class Structure:
 			if len(data) == 0:
 				data = b'\0\0'
 			elif len(data) % 2:
-				data += b'\0'
-			l = pack('<L', len(data)/2)
-			return b'%s\0\0\0\0%s%s' % (l,l,data)
+				data = data.encode() + b'\0'
+			l = pack('<L', len(data)//2)
+			return b''.join(map(bytes,[l, b'\0\0\0\0', l, data]))
 					
 		if data is None:
 			raise Exception("Trying to pack None")
