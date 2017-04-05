@@ -15,9 +15,9 @@ class CtxItem(Structure):
 		('ContextID',          '<H=0'),
 		('TransItems',         'B=0'),
 		('Pad',                'B=0'),
-		('AbstractSyntaxUUID', '16s=""'),
+		('AbstractSyntaxUUID', '16s=b""'),
 		('AbstractSyntaxVer',  '<I=0'),
-		('TransferSyntaxUUID', '16s=""'),
+		('TransferSyntaxUUID', '16s=b""'),
 		('TransferSyntaxVer',  '<I=0'),
 	)
 
@@ -28,7 +28,7 @@ class CtxItemResult(Structure):
 	structure = (
 		('Result',             '<H=0'),
 		('Reason',             '<H=0'),
-		('TransferSyntaxUUID', '16s=""'),
+		('TransferSyntaxUUID', '16s=b""'),
 		('TransferSyntaxVer',  '<I=0'),
 	)
 

@@ -162,15 +162,15 @@ class CtxItem(Structure):
         ('ContextID','<H=0'),
         ('TransItems','B=0'),
         ('Pad','B=0'),
-        ('AbstractSyntax','20s=""'),
-        ('TransferSyntax','20s=""'),
+        ('AbstractSyntax','20s=b""'),
+        ('TransferSyntax','20s=b""'),
     )
 
 class CtxItemResult(Structure):
     structure = (
         ('Result','<H=0'),
         ('Reason','<H=0'),
-        ('TransferSyntax','20s=""'),
+        ('TransferSyntax','20s=b""'),
     )
 
 class SEC_TRAILER(Structure):

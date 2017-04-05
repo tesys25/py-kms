@@ -6,7 +6,7 @@
 #
 # $Id$
 #
-
+from __future__ import print_function
 from struct import pack, unpack, calcsize
 
 class Structure:
