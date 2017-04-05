@@ -168,8 +168,14 @@ class Structure:
 	def __delitem__(self, key):
 		del self.fields[key]
 		
-	def __str__(self):
+	def __bytes__(self):
 		return self.getData()
+
+	def __str__(self):
+		if str is bytes:
+			return self.__bytes__()
+		else:
+			return self.__bytes__().decode()
 
 	def __len__(self):
 		# XXX: improve
@@ -262,7 +268,7 @@ class Structure:
 		
 		# literal specifier
 		if format[:1] == ':':
-			return data.encode()
+			return str(data).encode()
 
 		# struct like specifier
 		return pack(format, data)
@@ -598,13 +604,13 @@ class _StructureTest:
 		a = self.create()
 		self.populate(a)
 		a.dump("packing.....")
-		a_str = a.getData()
+		a_str = bytes(a)
 		print("packed: %r" % a_str)
 		print("unpacking.....")
 		b = self.create(a_str)
 		b.dump("unpacked.....")
 		print("repacking.....")
-		b_str = b.getData()
+		b_str = bytes(b)
 		if b_str != a_str:
 			print("ERROR: original packed and repacked don't match")
 			print("packed: %r" % b_str)
