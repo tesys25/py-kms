@@ -142,7 +142,7 @@ class Structure:
 			size = self.calcUnpackSize(field[1], data, field[0])
 			if self.debug:
 				print("  size = %d" % size)
-			dataClassOrCode = bytes.decode
+			dataClassOrCode = bytes
 			if len(field) > 2:
 				dataClassOrCode = field[2]
 			try:
@@ -172,10 +172,14 @@ class Structure:
 		return self.getData()
 
 	def __str__(self):
+		"""
+		In python 2, func `bytes` is alias of `str` and redirect to `__str__`,
+		workaround here is to redirect back to `__bytes__`
+		"""
 		if str is bytes:
 			return self.__bytes__()
 		else:
-			return self.__bytes__().decode()
+			return super(Structure, self).__str__()
 
 	def __len__(self):
 		# XXX: improve
@@ -268,12 +272,12 @@ class Structure:
 		
 		# literal specifier
 		if format[:1] == ':':
-			return str(data).encode()
+			return bytes(data)
 
 		# struct like specifier
 		return pack(format, data)
 
-	def unpack(self, format, data, dataClassOrCode = bytes.decode, field = None):
+	def unpack(self, format, data, dataClassOrCode = bytes, field = None):
 		if self.debug:
 			print("  unpack( %s | %r )" %  (format, data))
 
@@ -285,7 +289,7 @@ class Structure:
 
 		# void specifier
 		if format[:1] == '_':
-			if dataClassOrCode != bytes.decode:
+			if dataClassOrCode != bytes:
 				fields = {'self':self, 'inputDataLeft':data}
 				fields.update(self.fields)
 				return eval(dataClassOrCode, {}, fields)
@@ -638,7 +642,7 @@ class _Test_simple(_StructureTest):
 		a['int3'] = 0x45444342
 		a['z1']   = 'hola'
 		a['u1']   = 'hola'
-		a[':1']   = ':1234:'
+		a[':1']   = b':1234:'
 		a['arr1'] = (0x12341234,0x88990077,0x41414141)
 		# a['len1'] = 0x42424242
 
@@ -703,14 +707,14 @@ class _Test_UnpackCode(_StructureTest):
 	class theClass(Structure):
 		structure = (
 			('leni','<L=len(uno)*2'),
-			('cuchi','_-uno','leni/2'),
+			('cuchi','_-uno','leni//2'),
 			('uno',':'),
 			('dos',':'),
 		)
 
 	def populate(self, a):
-		a['uno'] = 'soy un loco!'
-		a['dos'] = 'que haces fiera'
+		a['uno'] = b'soy un loco!'
+		a['dos'] = b'que haces fiera'
 
 class _Test_AAA(_StructureTest):
 	class theClass(Structure):
@@ -730,7 +734,7 @@ class _Test_AAA(_StructureTest):
 		#a['pad']=int('01010101',2)
 		a['pad']=int('010101',2)
 		a['keyid']=0x07
-		a['data']="\xA0\xA1\xA2\xA3\xA4\xA5\xA6\xA7\xA8\xA9"
+		a['data']=b"\xA0\xA1\xA2\xA3\xA4\xA5\xA6\xA7\xA8\xA9"
 		a['icv'] = 0x05060708
 		#a['iv'] = 0x01020304
 		
