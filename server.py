@@ -2,7 +2,10 @@ import argparse
 import binascii
 import re
 import socket
-import socketserver
+try:
+	import socketserver
+except ImportError:
+	import SocketServer as socketserver
 import rpcBind, rpcRequest
 
 from dcerpc import MSRPCHeader
