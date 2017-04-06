@@ -33,7 +33,7 @@ class kmsRequestV6(kmsRequestV5):
 	def encryptResponse(self, request, decrypted, response):
 		randomSalt = self.getRandomSalt()
 		sha256 = hashlib.sha256()
-		sha256.update(str(randomSalt))
+		sha256.update(bytes(randomSalt))
 		result = sha256.digest()
 
 		SaltC = bytearray(request['message']['salt'])
@@ -50,9 +50,9 @@ class kmsRequestV6(kmsRequestV5):
 
 		message = self.DecryptedResponse.Message()
 		message['response'] = response
-		message['keys'] = str(randomStuff)
+		message['keys'] = bytes(randomStuff)
 		message['hash'] = result
-		message['xorSalts'] = str(XorSalts)
+		message['xorSalts'] = bytes(XorSalts)
 		message['hwid'] = self.config['hwid']
 
 		# SaltS
@@ -69,29 +69,29 @@ class kmsRequestV6(kmsRequestV5):
 		HMacMsg = bytearray(16)
 		for i in range (0, 16):
 			HMacMsg[i] = (SaltS[i] ^ DSaltS[i]) & 0xff
-		HMacMsg.extend(str(message))
+		HMacMsg.extend(bytes(message))
 
 		# HMacKey
 		requestTime = decrypted['request']['requestTime']
 		HMacKey = self.getMACKey(requestTime)
-		HMac = hmac.new(HMacKey, str(HMacMsg), hashlib.sha256)
+		HMac = hmac.new(HMacKey, bytes(HMacMsg), hashlib.sha256)
 		digest = HMac.digest()
 
 		responsedata = self.DecryptedResponse()
 		responsedata['message'] = message
 		responsedata['hmac'] = digest[16:]
 
-		padded = aes.append_PKCS7_padding(str(responsedata))
-		mode, orig_len, crypted = moo.encrypt(str(padded), moo.modeOfOperation["CBC"], self.key, moo.aes.keySize["SIZE_128"], SaltS)
+		padded = aes.append_PKCS7_padding(bytes(responsedata))
+		mode, orig_len, crypted = moo.encrypt(bytes(padded), moo.modeOfOperation["CBC"], self.key, moo.aes.keySize["SIZE_128"], SaltS)
 
-		return str(SaltS), str(bytearray(crypted))
+		return bytes(SaltS), bytes(bytearray(crypted))
 
 	def getMACKey(self, t):
 		c1 = 0x00000022816889BD
 		c2 = 0x000000208CBAB5ED
 		c3 = 0x3156CD5AC628477A
 
-		i1 = (t / c1) & 0xFFFFFFFFFFFFFFFF
+		i1 = (t // c1) & 0xFFFFFFFFFFFFFFFF
 		i2 = (i1 * c2) & 0xFFFFFFFFFFFFFFFF
 		seed = (i2 + c3) & 0xFFFFFFFFFFFFFFFF
 

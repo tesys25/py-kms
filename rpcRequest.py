@@ -36,7 +36,7 @@ class handler(rpcBase.rpcBase):
 
 		if self.config['debug']:
 			print("RPC Message Response:", response.dump())
-			print("RPC Message Response Bytes:", binascii.b2a_hex(str(response)))
+			print("RPC Message Response Bytes:", binascii.b2a_hex(bytes(response)))
 
 		return response
 
@@ -50,7 +50,7 @@ class handler(rpcBase.rpcBase):
 		request['representation'] = 0x10
 		request['call_id'] = self.config['call_id']
 		request['alloc_hint'] = len(self.data)
-		request['pduData'] = str(self.data)
+		request['pduData'] = bytes(self.data)
 
 		if self.config['debug']:
 			print("RPC Message Request:", request.dump())

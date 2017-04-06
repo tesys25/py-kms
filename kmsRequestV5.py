@@ -70,7 +70,7 @@ class kmsRequestV5(kmsBase):
 		self.responseData = self.generateResponse(iv, encrypted)
 	
 	def decryptRequest(self, request):
-		encrypted = bytearray(str(request['message']))
+		encrypted = bytearray(bytes(request['message']))
 		iv = bytearray(request['message']['salt'])
 
 		moo = aes.AESModeOfOperation()
@@ -94,15 +94,15 @@ class kmsRequestV5(kmsBase):
 
 		responsedata = self.DecryptedResponse()
 		responsedata['response'] = response
-		responsedata['keys'] = str(randomStuff)
+		responsedata['keys'] = bytes(randomStuff)
 		responsedata['hash'] = result
 		
-		padded = aes.append_PKCS7_padding(str(responsedata))
+		padded = aes.append_PKCS7_padding(bytes(responsedata))
 		moo = aes.AESModeOfOperation()
 		moo.aes.v6 = self.v6
 		mode, orig_len, crypted = moo.encrypt(padded, moo.modeOfOperation["CBC"], self.key, moo.aes.keySize["SIZE_128"], iv)
 
-		return str(iv), str(bytearray(crypted))
+		return bytes(iv), bytes(bytearray(crypted))
 
 	def decryptResponse(self, response):
 		paddingLength = response['bodyLength1'] % 8
@@ -130,9 +130,9 @@ class kmsRequestV5(kmsBase):
 
 		if self.config['debug']:
 			print("KMS V%d Response: %s" % (self.ver, response.dump()))
-			print("KMS V%d Structue Bytes: %s" % (self.ver, binascii.b2a_hex(str(response))))
+			print("KMS V%d Structue Bytes: %s" % (self.ver, binascii.b2a_hex(bytes(response))))
 
-		return str(response)
+		return bytes(response)
 	
 	def getResponse(self):
 		return self.responseData
@@ -149,7 +149,7 @@ class kmsRequestV5(kmsBase):
 		decrypted['salt'] = str(dsalt)
 		decrypted['request'] = requestBase
 
-		padded = aes.append_PKCS7_padding(str(decrypted))
+		padded = aes.append_PKCS7_padding(bytes(decrypted))
 		mode, orig_len, crypted = moo.encrypt(padded, moo.modeOfOperation["CBC"], self.key, moo.aes.keySize["SIZE_128"], esalt)
 
 		message = self.RequestV5.Message(str(bytearray(crypted)))

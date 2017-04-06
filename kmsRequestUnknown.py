@@ -7,4 +7,4 @@ class kmsRequestUnknown(kmsBase):
 		finalResponse.extend(bytearray(struct.pack('<I', 0)))
 		finalResponse.extend(bytearray(struct.pack('<I', 0)))
 		finalResponse.extend(bytearray(struct.pack('<I', self.errorCodes['SL_E_VL_KEY_MANAGEMENT_SERVICE_ID_MISMATCH'])))
-		return str(finalResponse)
+		return bytes(finalResponse)

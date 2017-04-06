@@ -57,7 +57,7 @@ pkeyConfigList["office15"] = {
 
 def epidGenerator(appId, version, lcid):
 	# Generate Part 1 & 7: Host Type and KMS Server OS Build
-	hostOsType = random.choice(hostOsList.keys())
+	hostOsType = random.choice(list(hostOsList.keys()))
 	hostOsDict = hostOsList[hostOsType]
 
 	# Generate Part 2: Group ID and Product Key ID Range

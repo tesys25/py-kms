@@ -215,10 +215,10 @@ class MSRPCHeader(Structure):
             self['type'] = MSRPC_REQUEST
             self.__frag_len_set = 0
             self['auth_len'] = 0
-            self['pduData'] = ''
-            self['auth_data'] = ''
-            self['sec_trailer'] = ''
-            self['pad'] = ''
+            self['pduData'] = b''
+            self['auth_data'] = b''
+            self['sec_trailer'] = b''
+            self['pad'] = b''
 
     def get_header_size(self):
         return self._SIZE
@@ -329,10 +329,10 @@ class MSRPCBindAck(Structure):
         self.__ctx_items = []
         Structure.__init__(self,data,alignment)
         if data is None:
-            self['Pad'] = ''
-            self['ctx_items'] = ''
-            self['sec_trailer'] = ''
-            self['auth_data'] = ''
+            self['Pad'] = b''
+            self['ctx_items'] = b''
+            self['sec_trailer'] = b''
+            self['auth_data'] = b''
 
     def getCtxItems(self):
         return self.__ctx_items

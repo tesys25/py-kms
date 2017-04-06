@@ -94,11 +94,11 @@ class handler(rpcBase.rpcBase):
 		response['max_rfrag'] = bind['max_rfrag']
 		response['assoc_group'] = 0x1063bf3f
 
-		port = str(self.config['port'])
+		port = str(self.config['port']).encode()
 		response['SecondaryAddrLen'] = len(port) + 1
 		response['SecondaryAddr'] = port
 		pad = (4-((response["SecondaryAddrLen"]+MSRPCBindAck._SIZE) % 4))%4
-		response['Pad'] = '\0' * pad
+		response['Pad'] = b'\0' * pad
 		response['ctx_num'] = bind['ctx_num']
 
 		preparedResponses = {}
@@ -106,15 +106,15 @@ class handler(rpcBase.rpcBase):
 		preparedResponses[uuidNDR64] = CtxItemResult(2, 2, uuidEmpty, 0)
 		preparedResponses[uuidTime] = CtxItemResult(3, 3, uuidEmpty, 0)
 
-		response['ctx_items'] = ''
+		response['ctx_items'] = b''
 		for i in range (0, bind['ctx_num']):
 			ts_uuid = bind['ctx_items'][i].ts()
 			resp = preparedResponses[ts_uuid]
-			response['ctx_items'] += str(resp)
+			response['ctx_items'] += bytes(resp)
 
 		if self.config['debug']:
 			print("RPC Bind Response:", response.dump())
-			print("RPC Bind Response Bytes:", binascii.b2a_hex(str(response)))
+			print("RPC Bind Response Bytes:", binascii.b2a_hex(bytes(response)))
 
 		return response
 
@@ -150,11 +150,11 @@ class handler(rpcBase.rpcBase):
 		request['type'] = self.packetType['bindReq']
 		request['flags'] = self.packetFlags['firstFrag'] | self.packetFlags['lastFrag'] | self.packetFlags['multiplex']
 		request['call_id'] = self.config['call_id']
-		request['pduData'] = str(bind)
+		request['pduData'] = bytes(bind)
 
 		if self.config['debug']:
 			print("RPC Bind Request:", request.dump(), MSRPCBind(request['pduData']).dump())
-			print("RPC Bind Request Bytes:", binascii.b2a_hex(str(request)))
+			print("RPC Bind Request Bytes:", binascii.b2a_hex(bytes(request)))
 
 		return request
 

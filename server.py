@@ -6,8 +6,9 @@ try:
 	import socketserver
 except ImportError:
 	import SocketServer as socketserver
-import rpcBind, rpcRequest
+import errno
 
+import rpcBind, rpcRequest
 from dcerpc import MSRPCHeader
 from rpcBase import rpcBase
 
@@ -64,7 +65,7 @@ class kmsServer(socketserver.BaseRequestHandler):
 			try:
 				self.data = self.connection.recv(1024)
 			except socket.error as e:
-				if e[0] == 104:
+				if e.errno == errno.ECONNRESET:
 					print("Error: Connection reset by peer.")
 					break
 				else:
@@ -88,7 +89,7 @@ class kmsServer(socketserver.BaseRequestHandler):
 				break
 
 			handler.populate()
-			res = str(handler.getResponse())
+			res = bytes(handler.getResponse())
 			self.connection.send(res)
 
 			if packetType == rpcBase.packetType['bindReq']:

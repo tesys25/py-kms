@@ -22,7 +22,7 @@ class UUID(Structure):
 	)
 
 	def get(self):
-		return uuid.UUID(bytes_le=str(self))
+		return uuid.UUID(bytes_le=bytes(self))
 
 class kmsBase:
 	class kmsRequestStruct(Structure):
@@ -243,7 +243,7 @@ class kmsBase:
 		return self.data
 
 	def getResponse(self):
-		return ''
+		return b''
 
 	def getResponsePadding(self, bodyLength):
 		if bodyLength % 8 == 0:
@@ -274,7 +274,7 @@ class kmsBase:
 						con.close()
 
 		if self.config['debug']:
-			print("KMS Request Bytes:", binascii.b2a_hex(str(kmsRequest)))
+			print("KMS Request Bytes:", binascii.b2a_hex(bytes(kmsRequest)))
 			print("KMS Request:", kmsRequest.dump())
 
 		clientMachineId = kmsRequest['clientMachineId'].get()

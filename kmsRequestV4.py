@@ -96,7 +96,7 @@ class kmsRequestV4(kmsBase):
 			print("KMS V4 Response:", response.dump())
 			print("KMS V4 Response Bytes:", binascii.b2a_hex(str(response)))
 
-		return str(response)
+		return bytes(response)
 
 	def getResponse(self):
 		return self.responseData
