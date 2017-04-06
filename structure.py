@@ -72,7 +72,7 @@ class Structure:
 	"""
 	commonHdr = ()
 	structure = ()
-	debug = 0
+	debug = 1
 
 	def __init__(self, data = None, alignment = 0):
 		if not hasattr(self, 'alignment'):
@@ -252,11 +252,11 @@ class Structure:
 
 		# asciiz specifier
 		if format[:1] == 'z':
-			return data.encode()+b'\0'
+			return data+b'\0'
 
 		# unicode specifier
 		if format[:1] == 'u':
-			return data.encode('utf_16_le')+b'\0\0' + (len(data) & 1 and b'\0' or b'')
+			return data+b'\0\0' + (len(data) & 1 and b'\0' or b'')
 
 		# DCE-RPC/NDR string specifier
 		if format[:1] == 'w':
@@ -347,13 +347,13 @@ class Structure:
 		if format == 'z':
 			if data[-1:] != b'\x00':
 				raise Exception("%s 'z' field is not NUL terminated: %r" % (field, data))
-			return data[:-1].decode() # remove trailing NUL
+			return data[:-1] # remove trailing NUL
 
 		# unicode specifier
 		if format == 'u':
 			if data[-2:] != b'\x00\x00':
 				raise Exception("%s 'u' field is not NUL-NUL terminated: %r" % (field, data))
-			return data[:-2].decode('utf_16_le') # remove trailing NUL
+			return data[:-2] # remove trailing NUL
 
 		# DCE-RPC/NDR string specifier
 		if format == 'w':
@@ -419,11 +419,11 @@ class Structure:
 
 		# asciiz specifier
 		if format[:1] == 'z':
-			return len(data.encode())+1
+			return len(data)+1
 
 		# asciiz specifier
 		if format[:1] == 'u':
-			l = len(data.encode('utf_16_le'))
+			l = len(data)
 			return l + (l & 1 and 3 or 2)
 
 		# DCE-RPC/NDR string specifier
@@ -640,8 +640,8 @@ class _Test_simple(_StructureTest):
 		a['default'] = 'hola'
 		a['int1'] = 0x3131
 		a['int3'] = 0x45444342
-		a['z1']   = 'hola'
-		a['u1']   = 'hola'
+		a['z1']   = b'hola'
+		a['u1']   = 'hola'.encode('utf_16_le')
 		a[':1']   = b':1234:'
 		a['arr1'] = (0x12341234,0x88990077,0x41414141)
 		# a['len1'] = 0x42424242
@@ -668,8 +668,8 @@ class _Test_nested(_StructureTest):
 	def populate(self, a):
 		a['nest1'] = _Test_nested.theClass._Inner()
 		a['nest2'] = _Test_nested.theClass._Inner()
-		a['nest1']['data'] = 'hola manola'
-		a['nest2']['data'] = 'chau loco'
+		a['nest1']['data'] = b'hola manola'
+		a['nest2']['data'] = b'chau loco'
 		a['int'] = 0x12345678
 	
 class _Test_Optional(_StructureTest):
@@ -701,7 +701,7 @@ class _Test_AsciiZArray(_StructureTest):
 	def populate(self, a):
 		a['head'] = 0x1234
 		a['tail'] = 0xabcd
-		a['array'] = ('hola','manola','te traje')
+		a['array'] = (b'hola',b'manola',b'te traje')
 		
 class _Test_UnpackCode(_StructureTest):
 	class theClass(Structure):
