@@ -47,8 +47,18 @@ class MSRPCBind(Structure):
 		def __len__(self):
 			return len(self.data)
 
-		def __str__(self):
+		def __bytes__(self):
 			return self.data
+
+		def __str__(self):
+			"""
+			In python 2, func `bytes` is alias of `str` and redirect to `__str__`,
+			workaround here is to redirect back to `__bytes__`
+			"""
+			if str is bytes:
+				return self.__bytes__()
+			else:
+				return super(CtxItemArray, self).__str__()
 
 		def __getitem__(self, i):
 			return CtxItem(self.data[(len(CtxItem()) * i):])
@@ -142,7 +152,7 @@ class handler(rpcBase.rpcBase):
 		bind['max_rfrag'] = 5840
 		bind['assoc_group'] = 0
 		bind['ctx_num'] = 2
-		bind['ctx_items'] = bind.CtxItemArray(str(firstCtxItem)+str(secondCtxItem))
+		bind['ctx_items'] = bind.CtxItemArray(bytes(firstCtxItem)+bytes(secondCtxItem))
 
 		request = MSRPCHeader()
 		request['ver_major'] = 5

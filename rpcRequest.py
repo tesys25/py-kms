@@ -54,7 +54,7 @@ class handler(rpcBase.rpcBase):
 
 		if self.config['debug']:
 			print("RPC Message Request:", request.dump())
-			print("RPC Message Request Bytes:", binascii.b2a_hex(str(request)))
+			print("RPC Message Request Bytes:", binascii.b2a_hex(bytes(request)))
 
 		return request
 

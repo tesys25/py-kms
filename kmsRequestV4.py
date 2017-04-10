@@ -39,7 +39,7 @@ class kmsRequestV4(kmsBase):
 		requestData = self.RequestV4(self.data)
 
 		response = self.serverLogic(requestData['request'])
-		hash = self.generateHash(bytearray(str(response)))
+		hash = self.generateHash(bytearray(bytes(response)))
 
 		self.responseData = self.generateResponse(response, hash)
 
@@ -83,7 +83,7 @@ class kmsRequestV4(kmsBase):
 		xorBuffer(lastBlock, 0, hashBuffer, 16)
 		hashBuffer = bytearray(aes.encrypt(hashBuffer, key, len(key)))
 
-		return str(hashBuffer)
+		return bytes(hashBuffer)
 
 	def generateResponse(self, responseBuffer, hash):
 		bodyLength = len(responseBuffer) + len(hash)
@@ -94,7 +94,7 @@ class kmsRequestV4(kmsBase):
 
 		if self.config['debug']:
 			print("KMS V4 Response:", response.dump())
-			print("KMS V4 Response Bytes:", binascii.b2a_hex(str(response)))
+			print("KMS V4 Response Bytes:", binascii.b2a_hex(bytes(response)))
 
 		return bytes(response)
 
@@ -102,7 +102,7 @@ class kmsRequestV4(kmsBase):
 		return self.responseData
 
 	def generateRequest(self, requestBase):
-		hash = str(self.generateHash(bytearray(str(requestBase))))
+		hash = self.generateHash(bytearray(bytes(requestBase)))
 
 		bodyLength = len(requestBase) + len(hash)
 
@@ -115,6 +115,6 @@ class kmsRequestV4(kmsBase):
 
 		if self.config['debug']:
 			print("Request V4 Data:", request.dump())
-			print("Request V4:", binascii.b2a_hex(str(request)))
+			print("Request V4:", binascii.b2a_hex(bytes(request)))
 
 		return request

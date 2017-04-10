@@ -6,8 +6,9 @@ import socket
 import string
 import sys
 import uuid
-import filetimes, rpcBind, rpcRequest
+import errno
 
+import filetimes, rpcBind, rpcRequest
 from dcerpc import MSRPCHeader, MSRPCBindNak, MSRPCRespHeader
 from kmsBase import kmsBase, UUID
 from kmsRequestV4 import kmsRequestV4
@@ -38,14 +39,14 @@ def main():
 	if config['verbose']:
 		print("Connection successful!")
 	binder = rpcBind.handler(None, config)
-	RPC_Bind = str(binder.generateRequest())
+	RPC_Bind = bytes(binder.generateRequest())
 	if config['verbose']:
 		print("Sending RPC bind request...")
 	s.send(RPC_Bind)
 	try:
 		bindResponse = s.recv(1024)
 	except socket.error as e:
-		if e[0] == 104:
+		if e.errno == errno.ECONNRESET:
 			print("Error: Connection reset by peer. Exiting...")
 			sys.exit()
 		else:
@@ -59,7 +60,7 @@ def main():
 			print("RPC bind acknowledged.")
 		kmsRequest = createKmsRequest()
 		requester = rpcRequest.handler(kmsRequest, config)
-		s.send(str(requester.generateRequest()))
+		s.send(bytes(requester.generateRequest()))
 		response = s.recv(1024)
 		if config['debug']:
 			print("Response:", binascii.b2a_hex(response))
@@ -156,7 +157,7 @@ def createKmsRequestBase():
 	requestDict['skuId'] = UUID(uuid.UUID(config['KMSClientSkuID']).bytes_le)
 	requestDict['kmsCountedId'] = UUID(uuid.UUID(config['KMSClientKMSCountedID']).bytes_le)
 	requestDict['clientMachineId'] = UUID(uuid.UUID(config['cmid']).bytes_le if (config['cmid'] is not None) else uuid.uuid4().bytes_le)
-	requestDict['previousClientMachineId'] = '\0' * 16 #requestDict['clientMachineId'] # I'm pretty sure this is supposed to be a null UUID.
+	requestDict['previousClientMachineId'] = b'\0' * 16 #requestDict['clientMachineId'] # I'm pretty sure this is supposed to be a null UUID.
 	requestDict['requiredClientCount'] = config['RequiredClientCount']
 	requestDict['requestTime'] = filetimes.dt_to_filetime(datetime.datetime.utcnow())
 	requestDict['machineName'] = (config['machineName'] if (config['machineName'] is not None) else ''.join(random.choice(string.ascii_letters + string.digits) for i in range(random.randint(2,63)))).encode('utf-16le')
@@ -202,7 +203,7 @@ def readKmsResponse(data, request, config):
 
 def readKmsResponseV4(data, request):
 	response = kmsRequestV4.ResponseV4(data)
-	hashed = kmsRequestV4(data, config).generateHash(bytearray(str(response['response'])))
+	hashed = kmsRequestV4(data, config).generateHash(bytearray(bytes(response['response'])))
 	print("Response Hash has expected value:", hashed == response['hash'])
 	return response
 
