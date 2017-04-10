@@ -72,7 +72,7 @@ class Structure:
 	"""
 	commonHdr = ()
 	structure = ()
-	debug = 1
+	debug = 0
 
 	def __init__(self, data = None, alignment = 0):
 		if not hasattr(self, 'alignment'):

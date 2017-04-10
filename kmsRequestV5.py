@@ -83,7 +83,7 @@ class kmsRequestV5(kmsBase):
 	def encryptResponse(self, request, decrypted, response):
 		randomSalt = self.getRandomSalt()
 		sha256 = hashlib.sha256()
-		sha256.update(str(randomSalt))
+		sha256.update(bytes(randomSalt))
 		result = sha256.digest()
 
 		iv = bytearray(request['message']['salt'])
@@ -146,13 +146,13 @@ class kmsRequestV5(kmsBase):
 		dsalt = bytearray(dsalt)
 
 		decrypted = self.DecryptedRequest()
-		decrypted['salt'] = str(dsalt)
+		decrypted['salt'] = bytes(dsalt)
 		decrypted['request'] = requestBase
 
 		padded = aes.append_PKCS7_padding(bytes(decrypted))
 		mode, orig_len, crypted = moo.encrypt(padded, moo.modeOfOperation["CBC"], self.key, moo.aes.keySize["SIZE_128"], esalt)
 
-		message = self.RequestV5.Message(str(bytearray(crypted)))
+		message = self.RequestV5.Message(bytes(bytearray(crypted)))
 
 		bodyLength = len(message) + 2 + 2
 
@@ -165,6 +165,6 @@ class kmsRequestV5(kmsBase):
 
 		if self.config['debug']:
 			print("Request V%d Data: %s" % (self.ver, request.dump()))
-			print("Request V%d: %s" % (self.ver, binascii.b2a_hex(str(request))))
+			print("Request V%d: %s" % (self.ver, binascii.b2a_hex(bytes(request))))
 
 		return request
