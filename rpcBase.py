@@ -40,7 +40,6 @@ class rpcBase:
 	def populate(self):
 		self.requestData = self.parseRequest()
 		self.responseData = self.generateResponse()
-		return self
 
 	def getConfig(self):
 		return self.config

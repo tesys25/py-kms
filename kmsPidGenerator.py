@@ -109,7 +109,7 @@ def epidGenerator(appId, version, lcid):
 	result.append("-")
 	result.append(str(keyConfig["GroupID"]).rjust(5, "0"))
 	result.append("-")
-	result.append(str(productKeyID / 1000000).rjust(3, "0"))
+	result.append(str(productKeyID // 1000000).rjust(3, "0"))
 	result.append("-")
 	result.append(str(productKeyID % 1000000).rjust(6, "0"))
 	result.append("-")
