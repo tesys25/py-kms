@@ -45,10 +45,11 @@ def main():
 		config['verbose'] = True
 	try:
 		import sqlite3
-		config['dbSupport'] = True
-	except:
+	except ImportError:
 		print("Warning: Module \"sqlite3\" is not installed--database support disabled.")
 		config['dbSupport'] = False
+	else:
+		config['dbSupport'] = True
 	server = socketserver.TCPServer((config['ip'], config['port']), kmsServer)
 	server.timeout = 5
 	print("TCP server listening at %s on port %d." % (config['ip'],config['port']))
@@ -56,41 +57,40 @@ def main():
 
 class kmsServer(socketserver.BaseRequestHandler):
 	def setup(self):
-		self.connection = self.request
 		print("Connection accepted: %s:%d" % (self.client_address[0],self.client_address[1]))
 
 	def handle(self):
 		while True:
 			# self.request is the TCP socket connected to the client
 			try:
-				self.data = self.connection.recv(1024)
+				data = self.request.recv(1024)
 			except socket.error as e:
 				if e.errno == errno.ECONNRESET:
 					print("Error: Connection reset by peer.")
 					break
 				else:
 					raise
-			if self.data == '' or not self.data:
+			if not data:
 				print("No data received!")
 				break
-			# self.data = bytearray(self.data.strip())
-			# print binascii.b2a_hex(str(self.data))
-			packetType = MSRPCHeader(self.data)['type']
+			# data = bytearray(data.strip())
+			# print binascii.b2a_hex(str(data))
+			packetType = MSRPCHeader(data)['type']
 			if packetType == rpcBase.packetType['bindReq']:
 				if config['verbose']:
 					print("RPC bind request received.")
-				handler = rpcBind.handler(self.data, config)
+				handler = rpcBind.handler(data, config)
 			elif packetType == rpcBase.packetType['request']:
 				if config['verbose']:
 					print("Received activation request.")
-				handler = rpcRequest.handler(self.data, config)
+				handler = rpcRequest.handler(data, config)
 			else:
 				print("Error: Invalid RPC request type", packetType)
 				break
 
 			handler.populate()
 			res = bytes(handler.getResponse())
-			self.connection.send(res)
+			self.request.send(res)
 
 			if packetType == rpcBase.packetType['bindReq']:
 				if config['verbose']:
@@ -101,7 +101,7 @@ class kmsServer(socketserver.BaseRequestHandler):
 				break
 
 	def finish(self):
-		self.connection.close()
+		self.request.close()
 		print("Connection closed: %s:%d" % (self.client_address[0],self.client_address[1]))
 
 if __name__ == "__main__":

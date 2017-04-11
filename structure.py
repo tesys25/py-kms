@@ -9,6 +9,8 @@
 from __future__ import print_function
 from struct import pack, unpack, calcsize
 
+debug = 0
+
 class Structure:
 	""" sublcasses can define commonHdr and/or structure.
 		each of them is an tuple of either two: (fieldName, format) or three: (fieldName, ':', class) fields.
@@ -72,33 +74,19 @@ class Structure:
 	"""
 	commonHdr = ()
 	structure = ()
-	debug = 0
 
 	def __init__(self, data = None, alignment = 0):
 		if not hasattr(self, 'alignment'):
 			self.alignment = alignment
 
 		self.fields    = {}
-		self.rawData   = data
 		if data is not None:
 			self.fromString(data)
 		else:
 			self.data = None
 
-	@classmethod
-	def fromFile(self, file):
-		answer = self()
-		answer.fromString(file.read(len(answer)))
-		return answer
-
-	def setAlignment(self, alignment):
-		self.alignment = alignment
-
-	def setData(self, data):
-		self.data = data
-
 	def packField(self, fieldName, format = None):
-		if self.debug:
+		if debug:
 			print("packField( %s | %s )" % (fieldName, format))
 
 		if format is None:
@@ -109,7 +97,7 @@ class Structure:
 		else:
 			ans = self.pack(format, None, field = fieldName)
 
-		if self.debug:
+		if debug:
 			print("\tanswer %r" % ans)
 
 		return ans
@@ -135,12 +123,11 @@ class Structure:
 		return data
 
 	def fromString(self, data):
-		self.rawData = data
 		for field in self.commonHdr+self.structure:
-			if self.debug:
+			if debug:
 				print("fromString( %s | %s | %r )" % (field[0], field[1], data))
 			size = self.calcUnpackSize(field[1], data, field[0])
-			if self.debug:
+			if debug:
 				print("  size = %d" % size)
 			dataClassOrCode = bytes
 			if len(field) > 2:
@@ -186,7 +173,7 @@ class Structure:
 		return len(self.getData())
 
 	def pack(self, format, data, field = None):
-		if self.debug:
+		if debug:
 			print("  pack( %s | %r | %s)" %  (format, data, field))
 
 		if field:
@@ -278,7 +265,7 @@ class Structure:
 		return pack(format, data)
 
 	def unpack(self, format, data, dataClassOrCode = bytes, field = None):
-		if self.debug:
+		if debug:
 			print("  unpack( %s | %r )" %  (format, data))
 
 		if field:
@@ -439,7 +426,7 @@ class Structure:
 		return calcsize(format)
 
 	def calcUnpackSize(self, format, data, field = None):
-		if self.debug:
+		if debug:
 			print("  calcUnpackSize( %s | %s | %r)" %  (field, format, data))
 
 		# void specifier
@@ -549,23 +536,6 @@ class Structure:
 			if field[1][-l:] == descriptor:
 				return field[0]
 		return None
-		
-	def zeroValue(self, format):
-		two = format.split('*')
-		if len(two) == 2:
-			if two[0].isdigit():
-				return (self.zeroValue(two[1]),)*int(two[0])
-						
-		if not format.find('*') == -1: return ()
-		if 's' in format: return ''
-		if format in ['z',':','u']: return ''
-		if format == 'w': return '\x00\x00'
-
-		return 0
-
-	def clear(self):
-		for field in self.commonHdr + self.structure:
-			self[field[0]] = self.zeroValue(field[1])
 
 	def dump(self, msg = None, indent = 0):
 		if msg is None: msg = self.__class__.__name__
