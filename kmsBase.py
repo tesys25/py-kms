@@ -24,57 +24,57 @@ class UUID(Structure):
 	def get(self):
 		return uuid.UUID(bytes_le=bytes(self))
 
+class kmsRequestStruct(Structure):
+	commonHdr = ()
+	structure = (
+		('versionMinor',            '<H'),
+		('versionMajor',            '<H'),
+		('isClientVm',              '<I'),
+		('licenseStatus',           '<I'),
+		('graceTime',               '<I'),
+		('applicationId',           ':', UUID),
+		('skuId',                   ':', UUID),
+		('kmsCountedId' ,           ':', UUID),
+		('clientMachineId',         ':', UUID),
+		('requiredClientCount',     '<I'),
+		('requestTime',             '<Q'),
+		('previousClientMachineId', ':', UUID),
+		('machineName',             'u'),
+		('_mnPad',                  '_-mnPad', '126-len(machineName)'),
+		('mnPad',                   ':'),
+	)
+
+	def getMachineName(self):
+		return self['machineName'].decode('utf-16le')
+
+	def getLicenseStatus(self):
+		return kmsBase.licenseStates[self['licenseStatus']] or "Unknown"
+
+class kmsResponseStruct(Structure):
+	commonHdr = ()
+	structure = (
+		('versionMinor',         '<H'),
+		('versionMajor',         '<H'),
+		('epidLen',              '<I=len(kmsEpid)+2'),
+		('kmsEpid',              'u'),
+		('clientMachineId',      ':', UUID),
+		('responseTime',         '<Q'),
+		('currentClientCount',   '<I'),
+		('vLActivationInterval', '<I'),
+		('vLRenewalInterval',    '<I'),
+	)
+
+class GenericRequestHeader(Structure):
+	commonHdr = ()
+	structure = (
+		('bodyLength1',  '<I'),
+		('bodyLength2',  '<I'),
+		('versionMinor', '<H'),
+		('versionMajor', '<H'),
+		('remainder',    '_'),
+	)
+
 class kmsBase:
-	class kmsRequestStruct(Structure):
-		commonHdr = ()
-		structure = (
-			('versionMinor',            '<H'),
-			('versionMajor',            '<H'),
-			('isClientVm',              '<I'),
-			('licenseStatus',           '<I'),
-			('graceTime',               '<I'),
-			('applicationId',           ':', UUID),
-			('skuId',                   ':', UUID),
-			('kmsCountedId' ,           ':', UUID),
-			('clientMachineId',         ':', UUID),
-			('requiredClientCount',     '<I'),
-			('requestTime',             '<Q'),
-			('previousClientMachineId', ':', UUID),
-			('machineName',             'u'),
-			('_mnPad',                  '_-mnPad', '126-len(machineName)'),
-			('mnPad',                   ':'),
-		)
-
-		def getMachineName(self):
-			return self['machineName'].decode('utf-16le')
-
-		def getLicenseStatus(self):
-			return kmsBase.licenseStates[self['licenseStatus']] or "Unknown"
-
-	class kmsResponseStruct(Structure):
-		commonHdr = ()
-		structure = (
-			('versionMinor',         '<H'),
-			('versionMajor',         '<H'),
-			('epidLen',              '<I=len(kmsEpid)+2'),
-			('kmsEpid',              'u'),
-			('clientMachineId',      ':', UUID),
-			('responseTime',         '<Q'),
-			('currentClientCount',   '<I'),
-			('vLActivationInterval', '<I'),
-			('vLRenewalInterval',    '<I'),
-		)
-
-	class GenericRequestHeader(Structure):
-		commonHdr = ()
-		structure = (
-			('bodyLength1',  '<I'),
-			('bodyLength2',  '<I'),
-			('versionMinor', '<H'),
-			('versionMajor', '<H'),
-			('remainder',    '_'),
-		)
-
 	appIds = {
 		uuid.UUID("55C92734-D682-4D71-983E-D6EC3F16059F") : "Windows",
 		uuid.UUID("59A52881-A989-479D-AF46-F275C6370663") : "Office 14 (2010)",
@@ -351,7 +351,7 @@ class kmsBase:
 		return self.createKmsResponse(kmsRequest)
 
 	def createKmsResponse(self, kmsRequest):
-		response = self.kmsResponseStruct()
+		response = kmsResponseStruct()
 		response['versionMinor'] = kmsRequest['versionMinor']
 		response['versionMajor'] = kmsRequest['versionMajor']
 
@@ -398,7 +398,7 @@ class kmsBase:
 import kmsRequestV4, kmsRequestV5, kmsRequestV6, kmsRequestUnknown
 
 def generateKmsResponseData(data, config):
-	version = kmsBase.GenericRequestHeader(data)['versionMajor']
+	version = GenericRequestHeader(data)['versionMajor']
 	currentDate = datetime.datetime.now().ctime()
 
 	if version == 4:

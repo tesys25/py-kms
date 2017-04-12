@@ -2,7 +2,7 @@ import aes
 import binascii
 import hashlib
 import random
-from kmsBase import kmsBase
+from kmsBase import kmsRequestStruct, kmsResponseStruct, kmsBase
 from structure import Structure
 
 class kmsRequestV5(kmsBase):
@@ -11,7 +11,7 @@ class kmsRequestV5(kmsBase):
 			commonHdr = ()
 			structure = (
 				('salt',      '16s'),
-				('encrypted', '236s'), #kmsBase.kmsRequestStruct
+				('encrypted', '236s'), #kmsRequestStruct
 				('padding',   ':'),
 			)
 
@@ -28,7 +28,7 @@ class kmsRequestV5(kmsBase):
 		commonHdr = ()
 		structure = (
 			('salt',    '16s'),
-			('request', ':', kmsBase.kmsRequestStruct),
+			('request', ':', kmsRequestStruct),
 		)
 
 	class ResponseV5(Structure):
@@ -47,7 +47,7 @@ class kmsRequestV5(kmsBase):
 	class DecryptedResponse(Structure):
 		commonHdr = ()
 		structure = (
-			('response', ':', kmsBase.kmsResponseStruct),
+			('response', ':', kmsResponseStruct),
 			('keys',     '16s'),
 			('hash',     '32s'),
 		)

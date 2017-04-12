@@ -2,7 +2,7 @@ import aes
 import hashlib
 import hmac
 import struct
-from kmsBase import kmsBase
+from kmsBase import kmsResponseStruct
 from kmsRequestV5 import kmsRequestV5
 from structure import Structure
 
@@ -11,7 +11,7 @@ class kmsRequestV6(kmsRequestV5):
 		class Message(Structure):
 			commonHdr = ()
 			structure = (
-				('response', ':', kmsBase.kmsResponseStruct),
+				('response', ':', kmsResponseStruct),
 				('keys',     '16s'),
 				('hash',     '32s'),
 				('hwid',     '8s'),

@@ -10,7 +10,7 @@ import errno
 
 import filetimes, rpcBind, rpcRequest
 from dcerpc import MSRPCHeader, MSRPCBindNak, MSRPCRespHeader
-from kmsBase import kmsBase, UUID
+from kmsBase import kmsRequestStruct, UUID
 from kmsRequestV4 import kmsRequestV4
 from kmsRequestV5 import kmsRequestV5
 from kmsRequestV6 import kmsRequestV6
@@ -65,7 +65,11 @@ def main():
 		if config['debug']:
 			print("Response:", binascii.b2a_hex(response))
 		parsed = MSRPCRespHeader(response)
+		if config['debug']:
+			parsed.dump(indent=4)
 		kmsData = readKmsResponse(parsed['pduData'], kmsRequest, config)
+		if config['debug']:
+			kmsData.dump(indent=4)
 		kmsResp = kmsData['response']
 		try:
 			hwid = kmsData['hwid']
@@ -147,7 +151,7 @@ def updateConfig():
 		config['KMSClientKMSCountedID'] = "e6a6f1bf-9d40-40c3-aa9f-c77ba21578c0"
 
 def createKmsRequestBase():
-	requestDict = kmsBase.kmsRequestStruct()
+	requestDict = kmsRequestStruct()
 	requestDict['versionMinor'] = config['KMSProtocolMinorVersion']
 	requestDict['versionMajor'] = config['KMSProtocolMajorVersion']
 	requestDict['isClientVm'] = 0

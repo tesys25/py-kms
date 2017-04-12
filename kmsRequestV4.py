@@ -1,6 +1,6 @@
 import binascii
 import time
-from kmsBase import kmsBase
+from kmsBase import kmsRequestStruct, kmsResponseStruct, kmsBase
 from structure import Structure
 
 from aes import AES
@@ -19,7 +19,7 @@ class kmsRequestV4(kmsBase):
 		structure = (
 			('bodyLength1', '<I'),
 			('bodyLength2', '<I'),
-			('request',     ':', kmsBase.kmsRequestStruct),
+			('request',     ':', kmsRequestStruct),
 			('hash',        '16s'),
 			('padding',     ':'),
 		)
@@ -30,7 +30,7 @@ class kmsRequestV4(kmsBase):
 			('bodyLength1', '<I=len(response) + len(hash)'),
 			('unknown',     '!I=0x00000200'),
 			('bodyLength2', '<I=len(response) + len(hash)'),
-			('response',    ':', kmsBase.kmsResponseStruct),
+			('response',    ':', kmsResponseStruct),
 			('hash',        '16s'),
 			('padding',     ':'),
 		)
@@ -106,7 +106,7 @@ class kmsRequestV4(kmsBase):
 
 		bodyLength = len(requestBase) + len(hash)
 
-		request = kmsRequestV4.RequestV4()
+		request = self.RequestV4()
 		request['bodyLength1'] = bodyLength
 		request['bodyLength2'] = bodyLength
 		request['request'] = requestBase
