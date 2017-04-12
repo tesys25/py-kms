@@ -193,7 +193,7 @@ def createKmsRequest():
 def readKmsResponse(data, request, config):
 	if config['KMSProtocolMajorVersion'] == 4:
 		print("Received V4 response")
-		response = readKmsResponseV4(data, request)
+		response = readKmsResponseV4(data)
 	elif config['KMSProtocolMajorVersion'] == 5:
 		print("Received V5 response")
 		response = readKmsResponseV5(data)
@@ -205,7 +205,7 @@ def readKmsResponse(data, request, config):
 		print("I'm not even sure how this happened...")
 	return response
 
-def readKmsResponseV4(data, request):
+def readKmsResponseV4(data):
 	response = kmsRequestV4.ResponseV4(data)
 	hashed = kmsRequestV4(data, config).generateHash(bytearray(bytes(response['response'])))
 	print("Response Hash has expected value:", hashed == response['hash'])

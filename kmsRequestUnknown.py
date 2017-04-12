@@ -1,10 +1,10 @@
 import struct
-from kmsBase import kmsBase
+from kmsBase import errorCodes, kmsBase
 
 class kmsRequestUnknown(kmsBase):
 	def getResponse(self):
 		finalResponse = bytearray()
 		finalResponse.extend(bytearray(struct.pack('<I', 0)))
 		finalResponse.extend(bytearray(struct.pack('<I', 0)))
-		finalResponse.extend(bytearray(struct.pack('<I', self.errorCodes['SL_E_VL_KEY_MANAGEMENT_SERVICE_ID_MISMATCH'])))
+		finalResponse.extend(bytearray(struct.pack('<I', errorCodes['SL_E_VL_KEY_MANAGEMENT_SERVICE_ID_MISMATCH'])))
 		return bytes(finalResponse)

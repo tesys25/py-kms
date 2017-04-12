@@ -86,9 +86,8 @@ class handler(rpcBase.rpcBase):
 
 		return request
 
-	def generateResponse(self):
+	def generateResponse(self, request):
 		response = MSRPCBindAck()
-		request = self.requestData
 		bind = MSRPCBind(request['pduData'])
 
 		response['ver_major'] = request['ver_major']

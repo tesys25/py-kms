@@ -59,15 +59,15 @@ class kmsRequestV5(kmsBase):
 	ver = 5
 
 	def executeRequestLogic(self):
-		self.requestData = self.RequestV5(self.data)
+		requestData = self.RequestV5(self.data)
 	
-		decrypted = self.decryptRequest(self.requestData)
+		decrypted = self.decryptRequest(requestData)
 
 		responseBuffer = self.serverLogic(decrypted['request'])
 	
-		iv, encrypted = self.encryptResponse(self.requestData, decrypted, responseBuffer)
+		iv, encrypted = self.encryptResponse(requestData, decrypted, responseBuffer)
 
-		self.responseData = self.generateResponse(iv, encrypted)
+		self.responseData = self.generateResponse(iv, encrypted, requestData)
 	
 	def decryptRequest(self, request):
 		encrypted = bytearray(bytes(request['message']))
@@ -119,11 +119,11 @@ class kmsRequestV5(kmsBase):
 	def getRandomSalt(self):
 		return bytearray(random.getrandbits(8) for i in range(16))
 	
-	def generateResponse(self, iv, encryptedResponse):
+	def generateResponse(self, iv, encryptedResponse, requestData):
 		bodyLength = 4 + len(iv) + len(encryptedResponse)
 		response = self.ResponseV5()
-		response['versionMinor'] = self.requestData['versionMinor']
-		response['versionMajor'] = self.requestData['versionMajor']
+		response['versionMinor'] = requestData['versionMinor']
+		response['versionMajor'] = requestData['versionMajor']
 		response['salt'] = iv
 		response['encrypted'] = encryptedResponse
 		response['padding'] = self.getResponsePadding(bodyLength)

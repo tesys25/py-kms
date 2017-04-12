@@ -14,9 +14,7 @@ class handler(rpcBase.rpcBase):
 
 		return request
 
-	def generateResponse(self):
-		request = self.requestData
-
+	def generateResponse(self, request):
 		responseData = kmsBase.generateKmsResponseData(request['pduData'], self.config)
 		envelopeLength = len(responseData)
 
