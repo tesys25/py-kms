@@ -97,7 +97,7 @@ class kmsRequestV4(kmsBase):
 			print("KMS V4 Response:", response.dump())
 			print("KMS V4 Response Bytes:", binascii.b2a_hex(bytes(response)))
 
-		return bytes(response)
+		return response
 
 	def generateRequest(self, requestBase):
 		hash = self.generateHash(bytearray(bytes(requestBase)))

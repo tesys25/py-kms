@@ -132,7 +132,7 @@ class kmsRequestV5(kmsBase):
 			print("KMS V%d Response: %s" % (self.ver, response.dump()))
 			print("KMS V%d Structue Bytes: %s" % (self.ver, binascii.b2a_hex(bytes(response))))
 
-		return bytes(response)
+		return response
 
 	def generateRequest(self, requestBase):
 		esalt = self.getRandomSalt()
