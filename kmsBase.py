@@ -233,18 +233,6 @@ class kmsBase:
 		self.data = data
 		self.config = config
 
-	def getConfig(self):
-		return self.config
-
-	def getOptions(self):
-		return self.config
-
-	def getData(self):
-		return self.data
-
-	def getResponse(self):
-		return b''
-
 	def getResponsePadding(self, bodyLength):
 		if bodyLength % 8 == 0:
 			paddingLength = 0
@@ -404,16 +392,13 @@ def generateKmsResponseData(data, config):
 	if version == 4:
 		print("Received V%d request on %s." % (version, currentDate))
 		messagehandler = kmsRequestV4.kmsRequestV4(data, config)
-		messagehandler.executeRequestLogic()
 	elif version == 5:
 		print("Received V%d request on %s." % (version, currentDate))
 		messagehandler = kmsRequestV5.kmsRequestV5(data, config)
-		messagehandler.executeRequestLogic()
 	elif version == 6:
 		print("Received V%d request on %s." % (version, currentDate))
 		messagehandler = kmsRequestV6.kmsRequestV6(data, config)
-		messagehandler.executeRequestLogic()
 	else:
 		print("Unhandled KMS version.", version)
 		messagehandler = kmsRequestUnknown.kmsRequestUnknown(data, config)
-	return messagehandler.getResponse()
+	return messagehandler.executeRequestLogic()

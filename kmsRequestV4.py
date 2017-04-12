@@ -41,9 +41,10 @@ class kmsRequestV4(kmsBase):
 		response = self.serverLogic(requestData['request'])
 		hash = self.generateHash(bytearray(bytes(response)))
 
-		self.responseData = self.generateResponse(response, hash)
+		responseData = self.generateResponse(response, hash)
 
 		time.sleep(1) # request sent back too quick for Windows 2008 R2, slow it down.
+		return responseData
 
 	def generateHash(self, message):
 		"""
@@ -97,9 +98,6 @@ class kmsRequestV4(kmsBase):
 			print("KMS V4 Response Bytes:", binascii.b2a_hex(bytes(response)))
 
 		return bytes(response)
-
-	def getResponse(self):
-		return self.responseData
 
 	def generateRequest(self, requestBase):
 		hash = self.generateHash(bytearray(bytes(requestBase)))

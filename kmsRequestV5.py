@@ -67,7 +67,7 @@ class kmsRequestV5(kmsBase):
 	
 		iv, encrypted = self.encryptResponse(requestData, decrypted, responseBuffer)
 
-		self.responseData = self.generateResponse(iv, encrypted, requestData)
+		return self.generateResponse(iv, encrypted, requestData)
 	
 	def decryptRequest(self, request):
 		encrypted = bytearray(bytes(request['message']))
@@ -133,9 +133,6 @@ class kmsRequestV5(kmsBase):
 			print("KMS V%d Structue Bytes: %s" % (self.ver, binascii.b2a_hex(bytes(response))))
 
 		return bytes(response)
-	
-	def getResponse(self):
-		return self.responseData
 
 	def generateRequest(self, requestBase):
 		esalt = self.getRandomSalt()
