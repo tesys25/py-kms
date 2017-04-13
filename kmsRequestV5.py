@@ -82,9 +82,7 @@ class kmsRequestV5(kmsBase):
 
 	def encryptResponse(self, request, decrypted, response):
 		randomSalt = self.getRandomSalt()
-		sha256 = hashlib.sha256()
-		sha256.update(bytes(randomSalt))
-		result = sha256.digest()
+		result = hashlib.sha256(randomSalt).digest()
 
 		iv = bytearray(request['message']['salt'])
 
@@ -105,7 +103,7 @@ class kmsRequestV5(kmsBase):
 		return bytes(iv), bytes(bytearray(crypted))
 
 	def decryptResponse(self, response):
-		paddingLength = response['bodyLength1'] % 8
+		paddingLength = len(self.getResponsePadding(response['bodyLength1']))
 		iv = bytearray(response['salt'])
 		encrypted = bytearray(response['encrypted'][:-paddingLength])
 

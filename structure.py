@@ -143,6 +143,8 @@ class Structure:
 				size += self.alignment - (size % self.alignment)
 			data = data[size:]
 
+		if debug:
+			self.dump(indent=4)
 		return self
 		
 	def __setitem__(self, key, value):
@@ -156,6 +158,8 @@ class Structure:
 		del self.fields[key]
 		
 	def __bytes__(self):
+		if debug:
+			self.dump(indent=4)
 		return self.getData()
 
 	def __str__(self):

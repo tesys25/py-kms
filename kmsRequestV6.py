@@ -32,9 +32,7 @@ class kmsRequestV6(kmsRequestV5):
 
 	def encryptResponse(self, request, decrypted, response):
 		randomSalt = self.getRandomSalt()
-		sha256 = hashlib.sha256()
-		sha256.update(bytes(randomSalt))
-		result = sha256.digest()
+		result = hashlib.sha256(randomSalt).digest()
 
 		SaltC = bytearray(request['message']['salt'])
 		DSaltC = bytearray(decrypted['salt'])

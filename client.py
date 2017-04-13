@@ -65,11 +65,7 @@ def main():
 		if config['debug']:
 			print("Response:", binascii.b2a_hex(response))
 		parsed = MSRPCRespHeader(response)
-		if config['debug']:
-			parsed.dump(indent=4)
 		kmsData = readKmsResponse(parsed['pduData'], kmsRequest, config)
-		if config['debug']:
-			kmsData.dump(indent=4)
 		kmsResp = kmsData['response']
 		try:
 			hwid = kmsData['hwid']
