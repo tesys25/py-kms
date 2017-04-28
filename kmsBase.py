@@ -343,7 +343,7 @@ class kmsBase:
 		response['versionMajor'] = kmsRequest['versionMajor']
 
 		if not self.config["epid"]:
-			response["kmsEpid"] = kmsPidGenerator.epidGenerator(kmsRequest['applicationId'], kmsRequest['versionMajor'], self.config["lcid"]).encode('utf-16le')
+			response["kmsEpid"] = kmsPidGenerator.epidGenerator(kmsRequest['applicationId'].get(), kmsRequest['versionMajor'], self.config["lcid"]).encode('utf-16le')
 		else:
 			response["kmsEpid"] = self.config["epid"].encode('utf-16le')
 		response['clientMachineId'] = kmsRequest['clientMachineId']
