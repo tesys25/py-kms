@@ -1,3 +1,4 @@
+import os
 import argparse
 import binascii
 import re
@@ -19,7 +20,7 @@ def main():
 	parser.add_argument("ip", nargs="?", action="store", default="0.0.0.0", help="The IP address to listen on. The default is \"0.0.0.0\" (all interfaces).", type=str)
 	parser.add_argument("port", nargs="?", action="store", default=1688, help="The network port to listen on. The default is \"1688\".", type=int)
 	parser.add_argument("-e", "--epid", dest="epid", default=None, help="Use this flag to manually specify an ePID to use. If no ePID is specified, a random ePID will be generated.", type=str)
-	parser.add_argument("-l", "--lcid", dest="lcid", default=1033, help="Use this flag to manually specify an LCID for use with randomly generated ePIDs. If an ePID is manually specified, this setting is ignored.", type=int)
+	parser.add_argument("-l", "--lcid", dest="lcid", default=None, help="Use this flag to manually specify an LCID for use with randomly generated ePIDs. Default is user default language.", type=int)
 	parser.add_argument("-c", "--client-count", dest="CurrentClientCount", default=26, help="Use this flag to specify the current client count. Default is 26. A number >25 is required to enable activation.", type=int)
 	parser.add_argument("-a", "--activation-interval", dest="VLActivationInterval", default=120, help="Use this flag to specify the activation interval (in minutes). Default is 120 minutes (2 hours).", type=int)
 	parser.add_argument("-r", "--renewal-interval", dest="VLRenewalInterval", default=1440 * 7, help="Use this flag to specify the renewal interval (in minutes). Default is 10080 minutes (7 days).", type=int)
@@ -41,6 +42,16 @@ def main():
 	except TypeError:
 		print("Error: HWID \"%s\" is invalid. Odd-length hex string." % binascii.b2a_hex(config['hwid']))
 		return
+	if not config['lcid']:
+		# http://stackoverflow.com/questions/3425294/how-to-detect-the-os-default-language-in-python
+		if os.name == 'nt':
+			import ctypes
+
+			config['lcid'] = ctypes.windll.kernel32.GetUserDefaultUILanguage()  # TODO: or GetSystemDefaultUILanguage?
+		else:
+			import locale
+
+			config['lcid'] = next(k for k, v in locale.windows_locale.items() if v == locale.getdefaultlocale()[0])
 	if config['debug']:
 		config['verbose'] = True
 	try:
