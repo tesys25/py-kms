@@ -196,31 +196,34 @@ class Structure:
 		# code specifier
 		two = format.split('=')
 		if len(two) >= 2:
-			try:
+			if data:
 				return self.pack(two[0], data)
-			except:
+			else:
 				fields = {'self':self}
 				fields.update(self.fields)
-				return self.pack(two[0], eval(two[1], {}, fields))
+				self[field] = eval(two[1], {}, fields)
+				return self.pack(two[0], self[field])
 
 		# address specifier
 		two = format.split('&')
 		if len(two) == 2:
-			try:
+			if data:
 				return self.pack(two[0], data)
-			except:
+			else:
 				if (two[1] in self.fields) and (self[two[1]] is not None):
-					return self.pack(two[0], id(self[two[1]]) & ((1<<(calcsize(two[0])*8))-1) )
+					self[field] = id(self[two[1]]) & ((1<<(calcsize(two[0])*8))-1)
 				else:
-					return self.pack(two[0], 0)
+					self[field] = 0
+				return self.pack(two[0], self[field])
 
 		# length specifier
 		two = format.split('-')
 		if len(two) == 2:
-			try:
+			if data:
 				return self.pack(two[0],data)
-			except:
-				return self.pack(two[0], self.calcPackFieldSize(two[1]))
+			else:
+				self[field] = self.calcPackFieldSize(two[1])
+				return self.pack(two[0], self[field])
 
 		# array specifier
 		two = format.split('*')

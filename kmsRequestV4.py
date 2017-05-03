@@ -21,7 +21,7 @@ class kmsRequestV4(kmsBase):
 			('bodyLength2', '<I=len(request) + len(hash)'),
 			('request',     ':', kmsRequestStruct),
 			('hash',        '16s'),
-			('padding',     ':'),
+			('padding',     ':=bytearray(4 + (((~bodyLength1 & 3) + 1) & 3))'),  # https://forums.mydigitallife.info/threads/71213-Source-C-KMS-Server-from-Microsoft-Toolkit?p=1277542&viewfull=1#post1277542
 		)
 
 	class ResponseV4(Structure):
@@ -32,7 +32,7 @@ class kmsRequestV4(kmsBase):
 			('bodyLength2', '<I=len(response) + len(hash)'),
 			('response',    ':', kmsResponseStruct),
 			('hash',        '16s'),
-			('padding',     ':'),
+			('padding',     ':=bytearray(4 + (((~bodyLength1 & 3) + 1) & 3))'),  # https://forums.mydigitallife.info/threads/71213-Source-C-KMS-Server-from-Microsoft-Toolkit?p=1277542&viewfull=1#post1277542
 		)
 
 	def executeRequestLogic(self):
@@ -91,7 +91,6 @@ class kmsRequestV4(kmsBase):
 		response = self.ResponseV4()
 		response['response'] = responseBuffer
 		response['hash'] = hash
-		response['padding'] = self.getResponsePadding(bodyLength)
 
 		if self.config['debug']:
 			print("KMS V4 Response:", response.dump())
@@ -107,7 +106,6 @@ class kmsRequestV4(kmsBase):
 		request = self.RequestV4()
 		request['request'] = requestBase
 		request['hash'] = hash
-		request['padding'] = self.getResponsePadding(bodyLength)
 
 		if self.config['debug']:
 			print("Request V4 Data:", request.dump())

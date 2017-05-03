@@ -41,7 +41,7 @@ class kmsRequestV5(kmsBase):
 			('versionMajor', '<H'),
 			('salt',         '16s'),
 			('encrypted',    ':'), #DecryptedResponse
-			('padding',      ':'),
+			('padding',      ':=bytearray(4 + (((~bodyLength1 & 3) + 1) & 3))'),  # https://forums.mydigitallife.info/threads/71213-Source-C-KMS-Server-from-Microsoft-Toolkit?p=1277542&viewfull=1#post1277542
 		)
 
 	class DecryptedResponse(Structure):
@@ -103,7 +103,7 @@ class kmsRequestV5(kmsBase):
 		return bytes(iv), bytes(bytearray(crypted))
 
 	def decryptResponse(self, response):
-		paddingLength = len(self.getResponsePadding(response['bodyLength1']))
+		paddingLength = len(response.packField('padding'))
 		iv = bytearray(response['salt'])
 		encrypted = bytearray(response['encrypted'][:-paddingLength])
 
@@ -124,7 +124,6 @@ class kmsRequestV5(kmsBase):
 		response['versionMajor'] = requestData['versionMajor']
 		response['salt'] = iv
 		response['encrypted'] = encryptedResponse
-		response['padding'] = self.getResponsePadding(bodyLength)
 
 		if self.config['debug']:
 			print("KMS V%d Response: %s" % (self.ver, response.dump()))

@@ -233,13 +233,6 @@ class kmsBase:
 		self.data = data
 		self.config = config
 
-	def getResponsePadding(self, bodyLength):
-		# Padding from Hotbird64 @ MDL
-		# https://forums.mydigitallife.info/threads/71213-Source-C-KMS-Server-from-Microsoft-Toolkit?p=1277542&viewfull=1#post1277542
-		paddingLength = 4 + (((~bodyLength & 3) + 1) & 3)
-
-		return bytearray(paddingLength)
-
 	def serverLogic(self, kmsRequest):
 		if self.config['sqlite'] and self.config['dbSupport']:
 			self.dbName = 'clients.db'
