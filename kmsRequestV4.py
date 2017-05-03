@@ -17,8 +17,8 @@ class kmsRequestV4(kmsBase):
 	class RequestV4(Structure):
 		commonHdr = ()
 		structure = (
-			('bodyLength1', '<I'),
-			('bodyLength2', '<I'),
+			('bodyLength1', '<I=len(request) + len(hash)'),
+			('bodyLength2', '<I=len(request) + len(hash)'),
 			('request',     ':', kmsRequestStruct),
 			('hash',        '16s'),
 			('padding',     ':'),
@@ -105,8 +105,6 @@ class kmsRequestV4(kmsBase):
 		bodyLength = len(requestBase) + len(hash)
 
 		request = self.RequestV4()
-		request['bodyLength1'] = bodyLength
-		request['bodyLength2'] = bodyLength
 		request['request'] = requestBase
 		request['hash'] = hash
 		request['padding'] = self.getResponsePadding(bodyLength)

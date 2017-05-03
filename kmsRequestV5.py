@@ -17,8 +17,8 @@ class kmsRequestV5(kmsBase):
 
 		commonHdr = ()
 		structure = (
-			('bodyLength1',  '<I'),
-			('bodyLength2',  '<I'),
+			('bodyLength1',  '<I=2 + 2 + len(message)'),
+			('bodyLength2',  '<I=2 + 2 + len(message)'),
 			('versionMinor', '<H'),
 			('versionMajor', '<H'),
 			('message',      ':', Message),
@@ -149,11 +149,7 @@ class kmsRequestV5(kmsBase):
 
 		message = self.RequestV5.Message(bytes(bytearray(crypted)))
 
-		bodyLength = len(message) + 2 + 2
-
 		request = self.RequestV5()
-		request['bodyLength1'] = bodyLength
-		request['bodyLength2'] = bodyLength
 		request['versionMinor'] = requestBase['versionMinor']
 		request['versionMajor'] = requestBase['versionMajor']
 		request['message'] = message
