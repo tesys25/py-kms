@@ -25,13 +25,11 @@
 """Tools to convert between Python datetime instances and Microsoft times.
 """
 from datetime import datetime, timedelta, tzinfo
-from calendar import timegm
 
 
 # http://support.microsoft.com/kb/167296
 # How To Convert a UNIX time_t to a Win32 FILETIME or SYSTEMTIME
-EPOCH_AS_FILETIME = 116444736000000000  # January 1, 1970 as MS file time
-HUNDREDS_OF_NANOSECONDS = 10000000
+ms_epoch = datetime(1601, 1, 1)
 
 
 ZERO = timedelta(0)
@@ -69,10 +67,8 @@ def dt_to_filetime(dt):
 	>>> dt_to_filetime(datetime(2009, 7, 25, 23, 0, 0, 100))
 	128930364000001000
 	"""
-	if (dt.tzinfo is None) or (dt.tzinfo.utcoffset(dt) is None):
-		dt = dt.replace(tzinfo=utc)
-	ft = EPOCH_AS_FILETIME + (timegm(dt.timetuple()) * HUNDREDS_OF_NANOSECONDS)
-	return ft + (dt.microsecond * 10)
+	ms = (dt.replace(tzinfo=None) - ms_epoch).total_seconds()
+	return int(ms * 1e6) * 10
 
 
 def filetime_to_dt(ft):
@@ -88,13 +84,7 @@ def filetime_to_dt(ft):
 	>>> filetime_to_dt(128930364000001000)
 	datetime.datetime(2009, 7, 25, 23, 0, 0, 100)
 	"""
-	# Get seconds and remainder in terms of Unix epoch
-	(s, ns100) = divmod(ft - EPOCH_AS_FILETIME, HUNDREDS_OF_NANOSECONDS)
-	# Convert to datetime object
-	dt = datetime.utcfromtimestamp(s)
-	# Add remainder in as microseconds. Python 3.2 requires an integer
-	dt = dt.replace(microsecond=(ns100 // 10))
-	return dt
+	return ms_epoch + timedelta(microseconds=ft / 10)
 
 
 if __name__ == "__main__":
