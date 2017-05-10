@@ -13,6 +13,48 @@ def xorBuffer(source, offset, destination, size):
 	for i in range(0, size):
 		destination[i] ^= source[i + offset]
 
+
+def generateHash(message):
+	"""
+	The KMS v4 hash is a variant of CMAC-AES-128. There are two key differences:
+	* The 'AES' used is modified in particular ways:
+	  * The basic algorithm is Rjindael with a conceptual 160bit key and 128bit blocks.
+	    This isn't part of the AES standard, but it works the way you'd expect.
+	    Accordingly, the algorithm uses 11 rounds and a 192 byte expanded key.
+	* The trailing block is not XORed with a generated subkey, as defined in CMAC.
+	  This is probably because the subkey generation algorithm is only defined for
+	  situations where block and key size are the same.
+	"""
+	aes = AES()
+
+	messageSize = len(message)
+	lastBlock = bytearray(16)
+	hashBuffer = bytearray(16)
+
+	# MessageSize / Blocksize
+	j = messageSize >> 4
+
+	# Remainding bytes
+	k = messageSize & 0xf
+
+	# Hash
+	for i in range(0, j):
+		xorBuffer(message, i << 4, hashBuffer, 16)
+		hashBuffer = bytearray(aes.encrypt(hashBuffer, key, len(key)))
+
+	# Bit Padding
+	ii = 0
+	for i in range(j << 4, k + (j << 4)):
+		lastBlock[ii] = message[i]
+		ii += 1
+	lastBlock[k] = 0x80
+
+	xorBuffer(lastBlock, 0, hashBuffer, 16)
+	hashBuffer = bytearray(aes.encrypt(hashBuffer, key, len(key)))
+
+	return bytes(hashBuffer)
+
+
 class kmsRequestV4(kmsBase):
 	class RequestV4(Structure):
 		commonHdr = ()
@@ -39,52 +81,12 @@ class kmsRequestV4(kmsBase):
 		requestData = self.RequestV4(self.data)
 
 		response = self.serverLogic(requestData['request'])
-		hash = self.generateHash(bytearray(bytes(response)))
+		hash = generateHash(bytearray(bytes(response)))
 
 		responseData = self.generateResponse(response, hash)
 
 		time.sleep(1) # request sent back too quick for Windows 2008 R2, slow it down.
 		return responseData
-
-	def generateHash(self, message):
-		"""
-		The KMS v4 hash is a variant of CMAC-AES-128. There are two key differences:
-		* The 'AES' used is modified in particular ways:
-		  * The basic algorithm is Rjindael with a conceptual 160bit key and 128bit blocks.
-		    This isn't part of the AES standard, but it works the way you'd expect.
-		    Accordingly, the algorithm uses 11 rounds and a 192 byte expanded key.
-		* The trailing block is not XORed with a generated subkey, as defined in CMAC.
-		  This is probably because the subkey generation algorithm is only defined for
-		  situations where block and key size are the same.
-		"""
-		aes = AES()
-
-		messageSize = len(message)
-		lastBlock = bytearray(16) 
-		hashBuffer = bytearray(16)
-
-		# MessageSize / Blocksize
-		j = messageSize >> 4
-
-		# Remainding bytes
-		k = messageSize & 0xf
-
-		# Hash
-		for i in range(0, j):
-			xorBuffer(message, i << 4, hashBuffer, 16)
-			hashBuffer = bytearray(aes.encrypt(hashBuffer, key, len(key)))
-
-		# Bit Padding
-		ii = 0
-		for i in range(j << 4, k + (j << 4)):
-			lastBlock[ii] = message[i]
-			ii += 1
-		lastBlock[k] = 0x80
-
-		xorBuffer(lastBlock, 0, hashBuffer, 16)
-		hashBuffer = bytearray(aes.encrypt(hashBuffer, key, len(key)))
-
-		return bytes(hashBuffer)
 
 	def generateResponse(self, responseBuffer, hash):
 		bodyLength = len(responseBuffer) + len(hash)
@@ -99,7 +101,7 @@ class kmsRequestV4(kmsBase):
 		return response
 
 	def generateRequest(self, requestBase):
-		hash = self.generateHash(bytearray(bytes(requestBase)))
+		hash = generateHash(bytearray(bytes(requestBase)))
 
 		bodyLength = len(requestBase) + len(hash)
 

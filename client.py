@@ -11,7 +11,7 @@ import errno
 import filetimes, rpcBind, rpcRequest
 from dcerpc import MSRPCHeader, MSRPCBindNak, MSRPCRespHeader
 from kmsBase import kmsRequestStruct, UUID
-from kmsRequestV4 import kmsRequestV4
+from kmsRequestV4 import kmsRequestV4, generateHash
 from kmsRequestV5 import kmsRequestV5
 from kmsRequestV6 import kmsRequestV6
 from rpcBase import rpcBase
@@ -203,7 +203,7 @@ def readKmsResponse(data, request, config):
 
 def readKmsResponseV4(data):
 	response = kmsRequestV4.ResponseV4(data)
-	hashed = kmsRequestV4(data, config).generateHash(bytearray(bytes(response['response'])))
+	hashed = generateHash(bytearray(bytes(response['response'])))
 	print("Response Hash has expected value:", hashed == response['hash'])
 	return response
 
