@@ -3,7 +3,7 @@ import time
 from kmsBase import kmsRequestStruct, kmsResponseStruct, kmsBase
 from structure import Structure
 
-from aes import AES
+from pyaes import AES
 
 # v4 AES Key
 key = bytearray([0x05, 0x3D, 0x83, 0x07, 0xF9, 0xE5, 0xF0, 0x88, 0xEB, 0x5E, 0xA6, 0x68, 0x6C, 0xF0, 0x37, 0xC7, 0xE4, 0xEF, 0xD2, 0xD6])
@@ -25,7 +25,7 @@ def generateHash(message):
 	  This is probably because the subkey generation algorithm is only defined for
 	  situations where block and key size are the same.
 	"""
-	aes = AES()
+	aes = AES(key, rounds=11)
 
 	messageSize = len(message)
 	lastBlock = bytearray(16)
@@ -40,7 +40,7 @@ def generateHash(message):
 	# Hash
 	for i in range(0, j):
 		xorBuffer(message, i << 4, hashBuffer, 16)
-		hashBuffer = bytearray(aes.encrypt(hashBuffer, key, len(key)))
+		hashBuffer = bytearray(aes.encrypt(hashBuffer))
 
 	# Bit Padding
 	ii = 0
@@ -50,7 +50,7 @@ def generateHash(message):
 	lastBlock[k] = 0x80
 
 	xorBuffer(lastBlock, 0, hashBuffer, 16)
-	hashBuffer = bytearray(aes.encrypt(hashBuffer, key, len(key)))
+	hashBuffer = bytearray(aes.encrypt(hashBuffer))
 
 	return bytes(hashBuffer)
 
