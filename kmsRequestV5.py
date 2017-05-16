@@ -76,8 +76,7 @@ class kmsRequestV5(kmsBase):
 
 		# TODO: v6
 		decrypter = pyaes.Decrypter(pyaes.AESModeOfOperationCBC(self.key, iv))
-		decrypted = decrypter.feed(encrypted)
-		decrypted += decrypter.feed()
+		decrypted = decrypter.feed(encrypted) + decrypter.feed()
 
 		return self.DecryptedRequest(decrypted)
 
@@ -98,20 +97,18 @@ class kmsRequestV5(kmsBase):
 
 		# TODO: v6
 		encrypter = pyaes.Encrypter(pyaes.AESModeOfOperationCBC(self.key, iv))
-		crypted = encrypter.feed(responsedata)
-		crypted += encrypter.feed()
+		crypted = encrypter.feed(responsedata) + encrypter.feed()
 
 		return bytes(iv), crypted
 
 	def decryptResponse(self, response):
 		paddingLength = len(response.packField('padding'))
-		iv = bytearray(response['salt'])
-		encrypted = bytearray(response['encrypted'][:-paddingLength])
+		iv = response['salt']
+		encrypted = response['encrypted'][:-paddingLength]
 
-		moo = aes.AESModeOfOperation()
-		moo.aes.v6 = self.v6
-		decrypted = moo.decrypt(encrypted, 256, moo.modeOfOperation["CBC"], self.key, moo.aes.keySize["SIZE_128"], iv)
-		decrypted = aes.strip_PKCS7_padding(decrypted)
+		# TODO: v6
+		decrypter = pyaes.Decrypter(pyaes.AESModeOfOperationCBC(self.key, iv))
+		decrypted = decrypter.feed(encrypted) + decrypter.feed()
 
 		return self.DecryptedResponse(decrypted)
 		
@@ -135,19 +132,18 @@ class kmsRequestV5(kmsBase):
 	def generateRequest(self, requestBase):
 		esalt = self.getRandomSalt()
 
-		moo = aes.AESModeOfOperation()
-		moo.aes.v6 = self.v6
-		dsalt = moo.decrypt(esalt, 16, moo.modeOfOperation["CBC"], self.key, moo.aes.keySize["SIZE_128"], esalt)
-		dsalt = bytearray(dsalt)
+		# TODO: v6
+		dsalt = pyaes.AESModeOfOperationCBC(self.key, iv=esalt).decrypt(esalt)
 
 		decrypted = self.DecryptedRequest()
-		decrypted['salt'] = bytes(dsalt)
+		decrypted['salt'] = dsalt
 		decrypted['request'] = requestBase
 
-		padded = aes.append_PKCS7_padding(bytes(decrypted))
-		mode, orig_len, crypted = moo.encrypt(padded, moo.modeOfOperation["CBC"], self.key, moo.aes.keySize["SIZE_128"], esalt)
+		# TODO: v6
+		encrypter = pyaes.Encrypter(pyaes.AESModeOfOperationCBC(self.key, esalt))
+		crypted = encrypter.feed(decrypted) + encrypter.feed()
 
-		message = self.RequestV5.Message(bytes(bytearray(crypted)))
+		message = self.RequestV5.Message(crypted)
 
 		request = self.RequestV5()
 		request['versionMinor'] = requestBase['versionMinor']
