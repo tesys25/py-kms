@@ -1,4 +1,5 @@
 import aes
+import pyaes
 import binascii
 import hashlib
 import random
@@ -70,13 +71,13 @@ class kmsRequestV5(kmsBase):
 		return self.generateResponse(iv, encrypted, requestData)
 	
 	def decryptRequest(self, request):
-		encrypted = bytearray(bytes(request['message']))
-		iv = bytearray(request['message']['salt'])
+		encrypted = bytes(request['message'])
+		iv = request['message']['salt']
 
-		moo = aes.AESModeOfOperation()
-		moo.aes.v6 = self.v6
-		decrypted = moo.decrypt(encrypted, 256, moo.modeOfOperation["CBC"], self.key, moo.aes.keySize["SIZE_128"], iv)
-		decrypted = aes.strip_PKCS7_padding(decrypted)
+		# TODO: v6
+		decrypter = pyaes.Decrypter(pyaes.AESModeOfOperationCBC(self.key, iv))
+		decrypted = decrypter.feed(encrypted)
+		decrypted += decrypter.feed()
 
 		return self.DecryptedRequest(decrypted)
 
@@ -94,13 +95,13 @@ class kmsRequestV5(kmsBase):
 		responsedata['response'] = response
 		responsedata['keys'] = bytes(randomStuff)
 		responsedata['hash'] = result
-		
-		padded = aes.append_PKCS7_padding(bytes(responsedata))
-		moo = aes.AESModeOfOperation()
-		moo.aes.v6 = self.v6
-		mode, orig_len, crypted = moo.encrypt(padded, moo.modeOfOperation["CBC"], self.key, moo.aes.keySize["SIZE_128"], iv)
 
-		return bytes(iv), bytes(bytearray(crypted))
+		# TODO: v6
+		encrypter = pyaes.Encrypter(pyaes.AESModeOfOperationCBC(self.key, iv))
+		crypted = encrypter.feed(responsedata)
+		crypted += encrypter.feed()
+
+		return bytes(iv), crypted
 
 	def decryptResponse(self, response):
 		paddingLength = len(response.packField('padding'))
