@@ -68,9 +68,6 @@ def _block_final_encrypt(self, data, padding = PADDING_DEFAULT):
 
     if len(data) == 32:
         return self.encrypt(data[:16]) + self.encrypt(data[16:])
-    print(data)
-    print(len(data))
-    print(type(data))
 
     return self.encrypt(data)
 
