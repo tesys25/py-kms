@@ -1,3 +1,4 @@
+import os
 import hashlib
 import hmac
 import struct
@@ -31,7 +32,7 @@ class kmsRequestV6(kmsRequestV5):
 	ver = 6
 
 	def encryptResponse(self, request, decrypted, response):
-		randomSalt = self.getRandomSalt()
+		randomSalt = bytearray(os.urandom(16))
 		result = hashlib.sha256(randomSalt).digest()
 
 		SaltC = bytearray(request['message']['salt'])
@@ -54,7 +55,7 @@ class kmsRequestV6(kmsRequestV5):
 		message['hwid'] = self.config['hwid']
 
 		# SaltS
-		SaltS = self.getRandomSalt()
+		SaltS = bytearray(os.urandom(16))
 
 		d = pyaes.AESModeOfOperationCBC(self.key, SaltS, v6=True).decrypt(SaltS)
 

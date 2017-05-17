@@ -1,6 +1,6 @@
+import os
 import binascii
 import hashlib
-import random
 import pyaes
 from kmsBase import kmsRequestStruct, kmsResponseStruct, kmsBase
 from structure import Structure
@@ -79,7 +79,7 @@ class kmsRequestV5(kmsBase):
 		return self.DecryptedRequest(decrypted)
 
 	def encryptResponse(self, request, decrypted, response):
-		randomSalt = self.getRandomSalt()
+		randomSalt = bytearray(os.urandom(16))
 		result = hashlib.sha256(randomSalt).digest()
 
 		iv = bytearray(request['message']['salt'])
@@ -107,9 +107,6 @@ class kmsRequestV5(kmsBase):
 		decrypted = decrypter.feed(encrypted) + decrypter.feed()
 
 		return self.DecryptedResponse(decrypted)
-		
-	def getRandomSalt(self):
-		return bytearray(random.getrandbits(8) for i in range(16))
 	
 	def generateResponse(self, iv, encryptedResponse, requestData):
 		bodyLength = 4 + len(iv) + len(encryptedResponse)
@@ -126,7 +123,7 @@ class kmsRequestV5(kmsBase):
 		return response
 
 	def generateRequest(self, requestBase):
-		esalt = self.getRandomSalt()
+		esalt = bytearray(os.urandom(16))
 
 		dsalt = pyaes.AESModeOfOperationCBC(self.key, iv=esalt, v6=self.v6).decrypt(esalt)
 
