@@ -1,8 +1,7 @@
-import aes
-import pyaes
 import binascii
 import hashlib
 import random
+import pyaes
 from kmsBase import kmsRequestStruct, kmsResponseStruct, kmsBase
 from structure import Structure
 
@@ -74,8 +73,7 @@ class kmsRequestV5(kmsBase):
 		encrypted = bytes(request['message'])
 		iv = request['message']['salt']
 
-		# TODO: v6
-		decrypter = pyaes.Decrypter(pyaes.AESModeOfOperationCBC(self.key, iv))
+		decrypter = pyaes.Decrypter(pyaes.AESModeOfOperationCBC(self.key, iv, v6=self.v6))
 		decrypted = decrypter.feed(encrypted) + decrypter.feed()
 
 		return self.DecryptedRequest(decrypted)
@@ -95,8 +93,7 @@ class kmsRequestV5(kmsBase):
 		responsedata['keys'] = bytes(randomStuff)
 		responsedata['hash'] = result
 
-		# TODO: v6
-		encrypter = pyaes.Encrypter(pyaes.AESModeOfOperationCBC(self.key, iv))
+		encrypter = pyaes.Encrypter(pyaes.AESModeOfOperationCBC(self.key, iv, v6=self.v6))
 		crypted = encrypter.feed(responsedata) + encrypter.feed()
 
 		return bytes(iv), crypted
@@ -106,8 +103,7 @@ class kmsRequestV5(kmsBase):
 		iv = response['salt']
 		encrypted = response['encrypted'][:-paddingLength]
 
-		# TODO: v6
-		decrypter = pyaes.Decrypter(pyaes.AESModeOfOperationCBC(self.key, iv))
+		decrypter = pyaes.Decrypter(pyaes.AESModeOfOperationCBC(self.key, iv, v6=self.v6))
 		decrypted = decrypter.feed(encrypted) + decrypter.feed()
 
 		return self.DecryptedResponse(decrypted)
@@ -132,15 +128,13 @@ class kmsRequestV5(kmsBase):
 	def generateRequest(self, requestBase):
 		esalt = self.getRandomSalt()
 
-		# TODO: v6
-		dsalt = pyaes.AESModeOfOperationCBC(self.key, iv=esalt).decrypt(esalt)
+		dsalt = pyaes.AESModeOfOperationCBC(self.key, iv=esalt, v6=self.v6).decrypt(esalt)
 
 		decrypted = self.DecryptedRequest()
 		decrypted['salt'] = dsalt
 		decrypted['request'] = requestBase
 
-		# TODO: v6
-		encrypter = pyaes.Encrypter(pyaes.AESModeOfOperationCBC(self.key, esalt))
+		encrypter = pyaes.Encrypter(pyaes.AESModeOfOperationCBC(self.key, esalt, v6=self.v6))
 		crypted = encrypter.feed(decrypted) + encrypter.feed()
 
 		message = self.RequestV5.Message(crypted)

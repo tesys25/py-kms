@@ -1,9 +1,9 @@
 import binascii
 import time
+import pyaes
 from kmsBase import kmsRequestStruct, kmsResponseStruct, kmsBase
 from structure import Structure
 
-from pyaes import AES
 
 # v4 AES Key
 key = bytearray([0x05, 0x3D, 0x83, 0x07, 0xF9, 0xE5, 0xF0, 0x88, 0xEB, 0x5E, 0xA6, 0x68, 0x6C, 0xF0, 0x37, 0xC7, 0xE4, 0xEF, 0xD2, 0xD6])
@@ -25,7 +25,7 @@ def generateHash(message):
 	  This is probably because the subkey generation algorithm is only defined for
 	  situations where block and key size are the same.
 	"""
-	aes = AES(key, rounds=11)
+	aes = pyaes.AES(key, rounds=11)
 
 	messageSize = len(message)
 	lastBlock = bytearray(16)

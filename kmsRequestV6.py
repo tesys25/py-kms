@@ -1,7 +1,7 @@
-import aes
 import hashlib
 import hmac
 import struct
+import pyaes
 from kmsBase import kmsResponseStruct
 from kmsRequestV5 import kmsRequestV5
 from structure import Structure
@@ -56,9 +56,7 @@ class kmsRequestV6(kmsRequestV5):
 		# SaltS
 		SaltS = self.getRandomSalt()
 
-		moo = aes.AESModeOfOperation()
-		moo.aes.v6 = True
-		d = moo.decrypt(SaltS, 16, moo.modeOfOperation["CBC"], self.key, moo.aes.keySize["SIZE_128"], SaltS)
+		d = pyaes.AESModeOfOperationCBC(self.key, SaltS, v6=True).decrypt(SaltS)
 
 		# DSaltS
 		DSaltS = bytearray(d)
@@ -79,8 +77,8 @@ class kmsRequestV6(kmsRequestV5):
 		responsedata['message'] = message
 		responsedata['hmac'] = digest[16:]
 
-		padded = aes.append_PKCS7_padding(bytes(responsedata))
-		mode, orig_len, crypted = moo.encrypt(bytes(padded), moo.modeOfOperation["CBC"], self.key, moo.aes.keySize["SIZE_128"], SaltS)
+		encrypter = pyaes.Encrypter(pyaes.AESModeOfOperationCBC(self.key, SaltS, v6=True))
+		crypted = encrypter.feed(responsedata) + encrypter.feed()
 
 		return bytes(SaltS), bytes(bytearray(crypted))
 
