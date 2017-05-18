@@ -109,7 +109,6 @@ class kmsRequestV5(kmsBase):
 		return self.DecryptedResponse(decrypted)
 	
 	def generateResponse(self, iv, encryptedResponse, requestData):
-		bodyLength = 4 + len(iv) + len(encryptedResponse)
 		response = self.ResponseV5()
 		response['versionMinor'] = requestData['versionMinor']
 		response['versionMajor'] = requestData['versionMajor']

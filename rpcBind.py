@@ -106,8 +106,6 @@ class handler(rpcBase.rpcBase):
 		port = str(self.config['port']).encode()
 		response['SecondaryAddrLen'] = len(port) + 1
 		response['SecondaryAddr'] = port
-		pad = (4-((response["SecondaryAddrLen"]+MSRPCBindAck._SIZE) % 4))%4
-		response['Pad'] = b'\0' * pad
 		response['ctx_num'] = bind['ctx_num']
 
 		preparedResponses = {}

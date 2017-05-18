@@ -89,7 +89,6 @@ class kmsRequestV4(kmsBase):
 		return responseData
 
 	def generateResponse(self, responseBuffer, hash):
-		bodyLength = len(responseBuffer) + len(hash)
 		response = self.ResponseV4()
 		response['response'] = responseBuffer
 		response['hash'] = hash
@@ -102,8 +101,6 @@ class kmsRequestV4(kmsBase):
 
 	def generateRequest(self, requestBase):
 		hash = generateHash(bytearray(bytes(requestBase)))
-
-		bodyLength = len(requestBase) + len(hash)
 
 		request = self.RequestV4()
 		request['request'] = requestBase

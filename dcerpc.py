@@ -676,7 +676,7 @@ class MSRPCBindAck(MSRPCHeader):
         ('SecondaryAddrLen','<H&SecondaryAddr'), 
         ('SecondaryAddr','z'),                          # Optional if SecondaryAddrLen == 0
         ('PadLen','_-Pad','(4-((self["SecondaryAddrLen"]+self._SIZE) % 4))%4'),
-        ('Pad',':'),
+        ('Pad',':=bytearray((4-((self["SecondaryAddrLen"]+self._SIZE) % 4))%4)'),
         ('ctx_num','B=0'),
         ('Reserved','B=0'),
         ('Reserved2','<H=0'),
