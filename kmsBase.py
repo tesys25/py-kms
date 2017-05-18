@@ -12,7 +12,7 @@ from structure import Structure
 # sqlite3 is optional
 try:
 	import sqlite3
-except:
+except ImportError:
 	pass
 
 appIds = {

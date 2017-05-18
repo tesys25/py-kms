@@ -67,10 +67,7 @@ def main():
 		parsed = MSRPCRespHeader(response)
 		kmsData = readKmsResponse(parsed['pduData'], kmsRequest, config)
 		kmsResp = kmsData['response']
-		try:
-			hwid = kmsData['hwid']
-		except:
-			hwid = None
+		hwid = kmsData.get('hwid', None)
 		print("KMS Host ePID:", kmsResp['kmsEpid'])
 		if hwid is not None:
 			print("KMS Host HWID:", binascii.b2a_hex(hwid).upper())
@@ -88,9 +85,9 @@ def checkConfig():
 	if config['cmid'] is not None:
 		try:
 			uuid.UUID(config['cmid'])
-		except:
+		except ValueError:
 			print("Error: Bad CMID. Exiting...")
-			sys.exit()
+			raise
 	if config['machineName'] is not None:
 		if len(config['machineName']) < 2 or len(config['machineName']) > 63:
 			print("Error: machineName must be between 2 and 63 characters in length.")
