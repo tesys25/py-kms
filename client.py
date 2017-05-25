@@ -22,7 +22,7 @@ def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument("ip", action="store", help="The IP address or hostname of the KMS host.", type=str)
 	parser.add_argument("port", nargs="?", action="store", default=1688, help="The port the KMS service is listening on. The default is \"1688\".", type=int)
-	parser.add_argument("-m", "--mode", dest="mode", choices=["WindowsVista","Windows7","Windows8","Windows81","Office2010","Office2013"], default="Windows7")
+	parser.add_argument("-m", "--mode", dest="mode", choices=["WindowsVista","Windows7","Windows8","Windows81","Windows10","Office2010","Office2013","Office2016"], default="Windows7")
 	parser.add_argument("-c", "--cmid", dest="cmid", default=None, help="Use this flag to manually specify a CMID to use. If no CMID is specified, a random CMID will be generated.", type=str)
 	parser.add_argument("-n", "--name", dest="machineName", default=None, help="Use this flag to manually specify an ASCII machineName to use. If no machineName is specified, a random machineName will be generated.", type=str)
 	parser.add_argument("-v", "--verbose", dest="verbose", action="store_const", const=True, default=False, help="Use this flag to enable verbose output.")
@@ -126,6 +126,14 @@ def updateConfig():
 		config['KMSClientAppID'] = "55c92734-d682-4d71-983e-d6ec3f16059f"
 		config['KMSClientSkuID'] = "81671aaf-79d1-4eb1-b004-8cbbe173afea"
 		config['KMSClientKMSCountedID'] = "cb8fc780-2c05-495a-9710-85afffc904d7"
+	elif config['mode'] == 'Windows10':
+		config['RequiredClientCount'] = 25
+		config['KMSProtocolMajorVersion'] = 6
+		config['KMSProtocolMinorVersion'] = 0
+		config['KMSClientLicenseStatus'] = 2
+		config['KMSClientAppID'] = "55c92734-d682-4d71-983e-d6ec3f16059f"
+		config['KMSClientSkuID'] = "73111121-5638-40f6-bc11-f1d7b0d64300"
+		config['KMSClientKMSCountedID'] = "58e2134f-8e11-4d17-9cb2-91069c151148"
 	elif config['mode'] == 'Office2010':
 		config['RequiredClientCount'] = 5
 		config['KMSProtocolMajorVersion'] = 4
@@ -142,6 +150,14 @@ def updateConfig():
 		config['KMSClientAppID'] = "0ff1ce15-a989-479d-af46-f275c6370663"
 		config['KMSClientSkuID'] = "b322da9c-a2e2-4058-9e4e-f59a6970bd69"
 		config['KMSClientKMSCountedID'] = "e6a6f1bf-9d40-40c3-aa9f-c77ba21578c0"
+	elif config['mode'] == 'Office2016':
+		config['RequiredClientCount'] = 5
+		config['KMSProtocolMajorVersion'] = 6
+		config['KMSProtocolMinorVersion'] = 0
+		config['KMSClientLicenseStatus'] = 2
+		config['KMSClientAppID'] = "0ff1ce15-a989-479d-af46-f275c6370663"
+		config['KMSClientSkuID'] = "d450596f-894d-49e0-966a-fd39ed4c4c64"
+		config['KMSClientKMSCountedID'] = "85b5f61b-320b-4be3-814a-b76b2bfafc82"
 
 def createKmsRequestBase():
 	requestDict = kmsRequestStruct()
