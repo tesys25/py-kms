@@ -2,7 +2,7 @@
 
 <!--
 <KmsData
-  Version="v1.0"                                         // Version of the KmsData file, currently only v1.0 (required), 
+  Version="v1.3"                                         // Version of the KmsData file, currently v1.0, v1.1, v1.2 or v1.3 (required), 
   Author="Hotbird64"                                     // Enter your name here (required)
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  // Loads the xsi namespace (recommended for syntax checking in an XSD capable XML editor)
   xsi:noNamespaceSchemaLocation="KmsDataBase.xsd"        // relative or absolute path of the validation file
@@ -38,11 +38,16 @@
 </KmsData>
 -->
 
-<KmsData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1.2" Author="Hotbird64" xsi:noNamespaceSchemaLocation="KmsDataBase.xsd">
+<KmsData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1.3" Author="Hotbird64" xsi:noNamespaceSchemaLocation="KmsDataBase.xsd">
 
   <AppItem DisplayName="Windows" Id="55c92734-d682-4d71-983e-d6ec3f16059f" VlmcsdEpidName="EPID_WINDOWS">
 
     <KmsItem DisplayName="Windows 10 Unknown (Volume)" Id="d27cd636-1962-44e9-8b4f-27b6c23efb85" NCountPolicy="25" DefaultKmsProtocol="6.0">
+    </KmsItem>
+
+    <KmsItem  DisplayName="Windows 10 China Government" Id="7ba0bf23-d0f5-4072-91d9-d55af5a481b6" NCountPolicy="25" DefaultKmsProtocol="6.0" VlmcsdEpidName="EPID_WINDOWS_CHINA_GOV">
+      <SkuItem DisplayName="Windows 10 Enterprise G" Id="e0b2d383-d112-413f-8a80-97f373a5820c" Gvlk="YYVX9-NTFWV-6MDM3-9PT4T-4M68B"/>
+      <SkuItem DisplayName="Windows 10 Enterprise GN" Id="e38454fb-41a4-4f59-a5dc-25080e354730" Gvlk="44RPN-FTY23-9VTTB-MP9BX-T84FV"/>
     </KmsItem>
     
     <KmsItem DisplayName="Windows 10 2016 (Volume)" Id="969fe3c0-a3ec-491a-9f25-423605deb365" DefaultKmsProtocol="6.0">
@@ -273,7 +278,7 @@
       <SkuItem DisplayName="Office Access 2016" Id="67c0fc0c-deba-401b-bf8b-9c8ad8395804" Gvlk="GNH9Y-D2J4T-FJHGG-QRVH7-QPFDW" />
       <SkuItem DisplayName="Office Excel 2016" Id="c3e65d36-141f-4d2f-a303-a842ee756a29" Gvlk="9C2PK-NWTVB-JMPW8-BFT28-7FTBF" />
       <SkuItem DisplayName="Office Mondo 2016" Id="9caabccb-61b1-4b4b-8bec-d10a3c3ac2ce" Gvlk="HFTND-W9MK4-8B7MJ-B6C4G-XQBR2" />
-      <SkuItem DisplayName="Office Mondo R 2016" Id="e914ea6e-a5fa-4439-a394-a9bb3293ca09" />
+      <SkuItem DisplayName="Office Mondo R 2016" Id="e914ea6e-a5fa-4439-a394-a9bb3293ca09" Gvlk="HCR8Y-NWFMQ-9F4Y9-3F8GD-TCQWG" IsGeneratedGvlk="true"/>
       <SkuItem DisplayName="Office OneNote 2016" Id="d8cace59-33d2-4ac7-9b1b-9b72339c51c8" Gvlk="DR92N-9HTF2-97XKM-XW2WJ-XW3J6" />
       <SkuItem DisplayName="Office Outlook 2016" Id="ec9d9265-9d1e-4ed0-838a-cdc20f2551a1" Gvlk="R69KK-NTPKF-7M3Q4-QYBHW-6MT9B" />
       <SkuItem DisplayName="Office Powerpoint 2016" Id="d70b1bba-b893-4544-96e2-b7a318091c33" Gvlk="J7MQP-HNJ4Y-WJ7YM-PFYGF-BY6C6" />
