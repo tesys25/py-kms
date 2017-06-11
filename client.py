@@ -67,10 +67,12 @@ def main():
 		parsed = MSRPCRespHeader(response)
 		kmsData = readKmsResponse(parsed['pduData'], kmsRequest, config)
 		kmsResp = kmsData['response']
-		hwid = kmsData.get('hwid', None)
-		print("KMS Host ePID:", kmsResp['kmsEpid'])
-		if hwid is not None:
+		try:
+			hwid = kmsData['hwid']
 			print("KMS Host HWID:", binascii.b2a_hex(hwid).upper())
+		except KeyError:
+			pass
+		print("KMS Host ePID:", kmsResp['kmsEpid'])
 		print("KMS Host Current Client Count:", kmsResp['currentClientCount'])
 		print("KMS VL Activation Interval:", kmsResp['vLActivationInterval'])
 		print("KMS VL Renewal Interval:", kmsResp['vLRenewalInterval'])
