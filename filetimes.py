@@ -24,67 +24,46 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """Tools to convert between Python datetime instances and Microsoft times.
 """
-from datetime import datetime, timedelta, tzinfo
 
 
 # http://support.microsoft.com/kb/167296
 # How To Convert a UNIX time_t to a Win32 FILETIME or SYSTEMTIME
-ms_epoch = datetime(1601, 1, 1)
+EPOCH_AS_FILETIME = 116444736000000000  # January 1, 1970 as MS file time
+HUNDREDS_OF_NANOSECONDS = 10000000
 
 
-ZERO = timedelta(0)
-HOUR = timedelta(hours=1)
-
-
-class UTC(tzinfo):
-	"""UTC"""
-	def utcoffset(self, dt):
-		return ZERO
-
-	def tzname(self, dt):
-		return "UTC"
-
-	def dst(self, dt):
-		return ZERO
-
-
-utc = UTC()
-
-
-def dt_to_filetime(dt):
+def timestamp2filetime(ts):
 	"""Converts a datetime to Microsoft filetime format. If the object is
 	time zone-naive, it is forced to UTC before conversion.
 
-	>>> "%.0f" % dt_to_filetime(datetime(2009, 7, 25, 23, 0))
+	>>> import calendar
+	>>> "%.0f" % timestamp2filetime(calendar.timegm((2009, 7, 25, 23, 0, 0, 0, 0, 0)))
 	'128930364000000000'
 
-	>>> "%.0f" % dt_to_filetime(datetime(1970, 1, 1, 0, 0, tzinfo=utc))
+	>>> "%.0f" % timestamp2filetime(calendar.timegm((1970, 1, 1, 0, 0, 0, 0, 0)))
 	'116444736000000000'
 
-	>>> "%.0f" % dt_to_filetime(datetime(1970, 1, 1, 0, 0))
-	'116444736000000000'
-	
-	>>> dt_to_filetime(datetime(2009, 7, 25, 23, 0, 0, 100))
-	128930364000001000
+	>>> timestamp2filetime(calendar.timegm((2009, 7, 25, 23, 0, 0, 0, 0, 0)) + 0.001)
+	128930364000010000
 	"""
-	ms = (dt.replace(tzinfo=None) - ms_epoch).total_seconds()
-	return int(ms * 1e6) * 10
+	return int(ts * HUNDREDS_OF_NANOSECONDS) + EPOCH_AS_FILETIME
 
 
-def filetime_to_dt(ft):
+def filetime2timestamp(ft):
 	"""Converts a Microsoft filetime number to a Python datetime. The new
 	datetime object is time zone-naive but is equivalent to tzinfo=utc.
 
-	>>> filetime_to_dt(116444736000000000)
-	datetime.datetime(1970, 1, 1, 0, 0)
+	>>> filetime2timestamp(116444736000000000)
+	0.0
 
-	>>> filetime_to_dt(128930364000000000)
-	datetime.datetime(2009, 7, 25, 23, 0)
+	>>> filetime2timestamp(128930364000000000)
+	1248562800.0
 	
-	>>> filetime_to_dt(128930364000001000)
-	datetime.datetime(2009, 7, 25, 23, 0, 0, 100)
+	>>> filetime2timestamp(128930364000001000)
+	1248562800.0001
 	"""
-	return ms_epoch + timedelta(microseconds=ft / 10)
+	# Get seconds and remainder in terms of Unix epoch
+	return (ft - EPOCH_AS_FILETIME) / float(HUNDREDS_OF_NANOSECONDS)
 
 
 if __name__ == "__main__":

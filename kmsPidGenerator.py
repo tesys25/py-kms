@@ -1,4 +1,3 @@
-import datetime
 import random
 import time
 import uuid
@@ -87,21 +86,22 @@ def epidGenerator(appId, version, lcid):
 	# Get Minimum Possible Date: Newer Products first
 	if hostOsType == "HOST_SERVER2012R2" or version == 6:
 		# Microsoft Windows Server 2012 R2 RTM (October 17, 2013)
-		minTime = datetime.date(2013, 10, 17)
+		minTime = time.mktime((2013, 10, 17, 0, 0, 0, 0, 0, 0))
 	elif appId == APP_ID_OFFICE15:
 		# Microsoft Office 2013 RTM (October 24, 2012)
-		minTime = datetime.date(2012, 10, 24)
+		minTime = time.mktime((2012, 10, 24, 0, 0, 0, 0, 0, 0))
 	elif hostOsType == "HOST_SERVER2012" or version == 5:
 		# Microsoft Windows Server 2012 RTM (September 4, 2012)
-		minTime = datetime.date(2012, 9, 4)
+		minTime = time.mktime((2012, 9, 4, 0, 0, 0, 0, 0, 0))
 	else:
 		# Windows Server 2008 R2 SP1 (February 16, 2011)
-		minTime = datetime.date(2011, 2, 16)
+		minTime = time.mktime((2011, 2, 16, 0, 0, 0, 0, 0, 0))
 
 	# Generate Year and Day Number
-	randomDate = datetime.date.fromtimestamp(random.randint(time.mktime(minTime.timetuple()), time.mktime(datetime.datetime.now().timetuple())))
-	firstOfYear = datetime.date(randomDate.year, 1, 1)
-	randomDayNumber = int((time.mktime(randomDate.timetuple()) - time.mktime(firstOfYear.timetuple())) / 86400 + 0.5)
+	randomDate = random.randint(int(minTime), int(time.time()))
+	randomYear = time.localtime(randomDate)[0]
+	firstOfYear = time.mktime((randomYear, 1, 1, 0, 0, 0, 0, 0, 0))
+	randomDayNumber = int((randomDate - firstOfYear) / 86400 + 0.5)
 
 	# generate the epid string
 	result = []
@@ -120,5 +120,5 @@ def epidGenerator(appId, version, lcid):
 	result.append(str(hostOsDict["osBuild"]).rjust(4, "0"))
 	result.append(".0000-")
 	result.append(str(randomDayNumber).rjust(3, "0"))
-	result.append(str(randomDate.year).rjust(4, "0"))
+	result.append(str(randomYear).rjust(4, "0"))
 	return "".join(result)
