@@ -152,7 +152,7 @@ class kmsBase:
 			local_dt = requestDatetime
 
 		kmsdata = parse(tokenize(open(kmsdb)), lesslist=False)['KmsData'][0]
-		appName, skuName = applicationId, skuId
+		appName, skuName, currentClientCount = applicationId, skuId, 25
 		for app in kmsdata['AppItem']:
 			if app['@Id'] == applicationId:
 				appName = app['@DisplayName']
@@ -160,6 +160,7 @@ class kmsBase:
 				for sku in kms.get('SkuItem', []):
 					if sku['@Id'] == skuId:
 						skuName = sku['@DisplayName']
+						currentClientCount = int(kms.get('@NCountPolicy', currentClientCount))
 
 		infoDict = {
 			"machineName" : kmsRequest.getMachineName(),
@@ -219,9 +220,9 @@ class kmsBase:
 					con.commit()
 					con.close()
 
-		return self.createKmsResponse(kmsRequest)
+		return self.createKmsResponse(kmsRequest, currentClientCount)
 
-	def createKmsResponse(self, kmsRequest):
+	def createKmsResponse(self, kmsRequest, currentClientCount):
 		response = kmsResponseStruct()
 		response['versionMinor'] = kmsRequest['versionMinor']
 		response['versionMajor'] = kmsRequest['versionMajor']
@@ -232,7 +233,10 @@ class kmsBase:
 			response["kmsEpid"] = self.config["epid"].encode('utf-16le')
 		response['clientMachineId'] = kmsRequest['clientMachineId']
 		response['responseTime'] = kmsRequest['requestTime']
-		response['currentClientCount'] = self.config["CurrentClientCount"]
+		if self.config["CurrentClientCount"]:
+			response['currentClientCount'] = self.config["CurrentClientCount"]
+		else:
+			response['currentClientCount'] = currentClientCount
 		response['vLActivationInterval'] = self.config["VLActivationInterval"]
 		response['vLRenewalInterval'] = self.config["VLRenewalInterval"]
 

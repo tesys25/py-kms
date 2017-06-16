@@ -21,7 +21,7 @@ def main():
 	parser.add_argument("port", nargs="?", action="store", default=1688, help="The network port to listen on. The default is \"1688\".", type=int)
 	parser.add_argument("-e", "--epid", dest="epid", default=None, help="Use this flag to manually specify an ePID to use. If no ePID is specified, a random ePID will be generated.", type=str)
 	parser.add_argument("-l", "--lcid", dest="lcid", default=None, help="Use this flag to manually specify an LCID for use with randomly generated ePIDs. Default is user default language.", type=int)
-	parser.add_argument("-c", "--client-count", dest="CurrentClientCount", default=26, help="Use this flag to specify the current client count. Default is 26. A number >25 is required to enable activation.", type=int)
+	parser.add_argument("-c", "--client-count", dest="CurrentClientCount", default=None, help="Use this flag to specify the current client count. Default is 26. A number >25 is required to enable activation.", type=int)
 	parser.add_argument("-a", "--activation-interval", dest="VLActivationInterval", default=120, help="Use this flag to specify the activation interval (in minutes). Default is 120 minutes (2 hours).", type=int)
 	parser.add_argument("-r", "--renewal-interval", dest="VLRenewalInterval", default=1440 * 7, help="Use this flag to specify the renewal interval (in minutes). Default is 10080 minutes (7 days).", type=int)
 	parser.add_argument("-v", "--verbose", dest="verbose", action="store_const", const=True, default=False, help="Use this flag to enable verbose output.")
