@@ -151,16 +151,20 @@ class kmsBase:
 		except ImportError:
 			local_dt = requestDatetime
 
+		# activation threshold:
+		# https://docs.microsoft.com/en-us/windows/deployment/volume-activation/activate-windows-10-clients-vamt
 		kmsdata = parse(tokenize(open(kmsdb)), lesslist=False)['KmsData'][0]
 		appName, skuName, currentClientCount = applicationId, skuId, 25
 		for app in kmsdata['AppItem']:
-			if app['@Id'] == applicationId:
-				appName = app['@DisplayName']
+			max_activ_thld = 0
 			for kms in app['KmsItem']:
+				max_activ_thld = max(max_activ_thld, int(kms.get('@NCountPolicy', 25)))
 				for sku in kms.get('SkuItem', []):
 					if sku['@Id'] == skuId:
 						skuName = sku['@DisplayName']
-						currentClientCount = int(kms.get('@NCountPolicy', currentClientCount))
+			if app['@Id'] == applicationId:
+				appName = app['@DisplayName']
+				currentClientCount = max_activ_thld * 2
 
 		infoDict = {
 			"machineName" : kmsRequest.getMachineName(),
