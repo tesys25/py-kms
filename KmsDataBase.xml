@@ -69,6 +69,8 @@
       <SkuItem DisplayName="Windows 10 Enterprise 2015 LTSB" Id="7b51a46c-0c04-4e8f-9af4-8496cca90d5e" Gvlk="WNMTR-4C88C-JK8YV-HQ7T2-76DF9" />
       <SkuItem DisplayName="Windows 10 Enterprise 2015 LTSB N" Id="87b838b7-41b6-4590-8318-5797951d8529" Gvlk="2F77B-TNFGY-69QQF-B8YKP-D69TJ" />
       <SkuItem DisplayName="Windows 10 Enterprise N" Id="e272e3e2-732f-4c65-a8f0-484747d0d947" Gvlk="DPH2V-TTNVB-4X9Q3-TJR4H-KHJW4" />
+      <SkuItem DisplayName="Windows 10 Professional Workstation" Id="82bbc092-bc50-4e16-8e18-b74fc486aec3" Gvlk="NRG8B-VKK3Q-CXVCJ-9G2XF-6Q84J" IsGeneratedGvlk="true"/>
+      <SkuItem DisplayName="Windows 10 Professional Workstation N" Id="4b1571d3-bafb-4b40-8087-a961be2caf65" Gvlk="9FNHH-K3HBT-3W4TD-6383H-6XYWF" IsGeneratedGvlk="true"/>
       <SkuItem DisplayName="Windows 10 Professional" Id="2de67392-b7a7-462a-b1ca-108dd189f588" Gvlk="W269N-WFGWX-YVC9B-4J6C9-T83GX" />
       <SkuItem DisplayName="Windows 10 Professional Education" Id="3f1afc82-f8ac-4f6c-8005-1d233e606eee" Gvlk="6TP4R-GNPTD-KYYHQ-7B7DP-J447Y" />
       <SkuItem DisplayName="Windows 10 Professional Education N" Id="5300b18c-2e33-4dc2-8291-47ffcec746dd" Gvlk="YVWGF-BXNMC-HTQYQ-CPQ99-66QFC" />
