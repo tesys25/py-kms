@@ -13,6 +13,9 @@ import rpcBind, rpcRequest
 from dcerpc import MSRPCHeader
 from rpcBase import rpcBase
 
+class V6Server(socketserver.TCPServer):
+	address_family = socket.AF_INET6
+
 config = {}
 
 def main():
@@ -61,7 +64,12 @@ def main():
 		config['dbSupport'] = False
 	else:
 		config['dbSupport'] = True
-	server = socketserver.TCPServer((config['ip'], config['port']), kmsServer)
+	try:
+		socket.inet_pton(socket.AF_INET6, config['ip'])
+	except OSError:
+		server = socketserver.TCPServer((config['ip'], config['port']), kmsServer)
+	else:
+		server = V6Server((config['ip'], config['port']), kmsServer)
 	server.timeout = 5
 	print("TCP server listening at %s on port %d." % (config['ip'],config['port']))
 	server.serve_forever()

@@ -33,7 +33,12 @@ def main():
 	if config['debug']:
 		config['verbose'] = True
 	updateConfig()
-	s = socket.socket()
+	try:
+		socket.inet_pton(socket.AF_INET6, config['ip'])
+	except OSError:
+		s = socket.socket()
+	else:
+		s = socket.socket(socket.AF_INET6)
 	print("Connecting to %s on port %d..." % (config['ip'], config['port']))
 	s.connect((config['ip'], config['port']))
 	if config['verbose']:
