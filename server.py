@@ -66,9 +66,10 @@ def main():
 		config['dbSupport'] = True
 	try:
 		socket.inet_pton(socket.AF_INET6, config['ip'])
-	except OSError:
-		server = socketserver.TCPServer((config['ip'], config['port']), kmsServer)
-	except IOError:
+	except (
+			OSError,  # input address is ipv4
+			IOError,  # ipv6 is unavailable
+	):
 		server = socketserver.TCPServer((config['ip'], config['port']), kmsServer)
 	else:
 		server = V6Server((config['ip'], config['port']), kmsServer)
