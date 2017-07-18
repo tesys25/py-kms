@@ -68,6 +68,8 @@ def main():
 		socket.inet_pton(socket.AF_INET6, config['ip'])
 	except OSError:
 		server = socketserver.TCPServer((config['ip'], config['port']), kmsServer)
+	except IOError:
+		server = socketserver.TCPServer((config['ip'], config['port']), kmsServer)
 	else:
 		server = V6Server((config['ip'], config['port']), kmsServer)
 	server.timeout = 5
