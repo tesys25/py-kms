@@ -1,6 +1,6 @@
 import argparse
 import binascii
-import datetime
+import time
 import random
 import socket
 import string
@@ -179,7 +179,7 @@ def createKmsRequestBase():
 	requestDict['clientMachineId'] = UUID(uuid.UUID(config['cmid']).bytes_le if (config['cmid'] is not None) else uuid.uuid4().bytes_le)
 	requestDict['previousClientMachineId'] = b'\0' * 16 #requestDict['clientMachineId'] # I'm pretty sure this is supposed to be a null UUID.
 	requestDict['requiredClientCount'] = config['RequiredClientCount']
-	requestDict['requestTime'] = filetimes.dt_to_filetime(datetime.datetime.utcnow())
+	requestDict['requestTime'] = filetimes.timestamp2filetime(time.time())
 	requestDict['machineName'] = (config['machineName'] if (config['machineName'] is not None) else ''.join(random.choice(string.ascii_letters + string.digits) for i in range(random.randint(2,63)))).encode('utf-16le')
 	requestDict['mnPad'] = '\0'.encode('utf-16le') * (63 - len(requestDict['machineName'].decode('utf-16le')))
 

@@ -1,5 +1,4 @@
 import binascii
-import datetime
 import filetimes
 import kmsPidGenerator
 import os
@@ -141,15 +140,20 @@ class kmsBase:
 		clientMachineId = str(kmsRequest['clientMachineId'].get())
 		applicationId = str(kmsRequest['applicationId'].get())
 		skuId = str(kmsRequest['skuId'].get())
-		requestDatetime = filetimes.filetime_to_dt(kmsRequest['requestTime'])
+		requestDatetime = filetimes.filetime2timestamp(kmsRequest['requestTime'])
 
 		# Try and localize the request time, if pytz is available
 		try:
 			import timezones
 			from pytz import utc
-			local_dt = utc.localize(requestDatetime).astimezone(timezones.localtz())
+			import datetime
+			dt = datetime.datetime.fromtimestamp(requestDatetime)
+			local_dt = utc.localize(dt).astimezone(timezones.localtz()).strftime('%Y-%m-%d %H:%M:%S %Z (UTC%z)')
 		except ImportError:
-			local_dt = requestDatetime
+			try:
+				local_dt = time.strftime('%Y-%m-%d %H:%M:%S %Z (UTC%z)', time.localtime(requestDatetime))
+			except TypeError:  # micropython-time accept timestamp stead of struct_time
+				local_dt = time.strftime('%Y-%m-%d %H:%M:%S %Z', requestDatetime)
 
 		# activation threshold:
 		# https://docs.microsoft.com/en-us/windows/deployment/volume-activation/activate-windows-10-clients-vamt
@@ -184,7 +188,7 @@ class kmsBase:
 			print("   Application ID: %s" % infoDict["appId"])
 			print("           SKU ID: %s" % infoDict["skuId"])
 			print("   Licence Status: %s" % infoDict["licenseStatus"])
-			print("     Request Time: %s" % local_dt.strftime('%Y-%m-%d %H:%M:%S %Z (UTC%z)'))
+			print("     Request Time: %s" % local_dt)
 
 		if self.config['sqlite'] and self.config['dbSupport']:
 			con = None
@@ -278,7 +282,7 @@ import kmsRequestV4, kmsRequestV5, kmsRequestV6, kmsRequestUnknown
 
 def generateKmsResponseData(data, config):
 	version = GenericRequestHeader(data)['versionMajor']
-	currentDate = datetime.datetime.now().ctime()
+	currentDate = time.strftime("%a %b %d %H:%M:%S %Y")
 
 	if version == 4:
 		print("Received V%d request on %s." % (version, currentDate))
