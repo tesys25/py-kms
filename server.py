@@ -6,7 +6,10 @@ import socket
 try:
 	import socketserver
 except ImportError:
-	import SocketServer as socketserver
+	try:
+		import SocketServer as socketserver
+	except ImportError:
+		import upy.socketserver as socketserver
 import errno
 
 import rpcBind, rpcRequest
