@@ -17,7 +17,7 @@ except ImportError:
 from xmltok import tokenize
 from uxml2dict import parse
 
-kmsdb = 'KmsDataBase.xml'
+kmsdb = os.path.join(os.path.dirname(__file__), 'KmsDataBase.xml')
 
 licenseStates = {
 	0 : "Unlicensed",
