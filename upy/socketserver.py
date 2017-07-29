@@ -133,10 +133,14 @@ import socket
 import select
 import os
 import errno
+# try:
+#     import threading
+# except ImportError:
+#     import dummy_threading as threading
 try:
-    import threading
+    import _thread
 except ImportError:
-    import dummy_threading as threading
+    import _dummy_thread as _thread
 
 __all__ = ["BaseServer", "TCPServer", "UDPServer", "ForkingUDPServer",
            "ForkingTCPServer", "ThreadingUDPServer", "ThreadingTCPServer",
@@ -207,7 +211,8 @@ class BaseServer:
         """Constructor.  May be extended, do not override."""
         self.server_address = server_address
         self.RequestHandlerClass = RequestHandlerClass
-        self.__is_shut_down = threading.Event()
+        # self.__is_shut_down = threading.Event()
+        self.__is_shut_down = _thread.allocate_lock()
         self.__shutdown_request = False
 
     def server_activate(self):
@@ -225,7 +230,8 @@ class BaseServer:
         self.timeout. If you need to do periodic tasks, do them in
         another thread.
         """
-        self.__is_shut_down.clear()
+        # self.__is_shut_down.clear()
+        self.__is_shut_down.acquire()
         try:
             while not self.__shutdown_request:
                 # XXX: Consider using another file descriptor or
@@ -240,7 +246,8 @@ class BaseServer:
                 self.service_actions()
         finally:
             self.__shutdown_request = False
-            self.__is_shut_down.set()
+            # self.__is_shut_down.set()
+            self.__is_shut_down.release()
 
     def shutdown(self):
         """Stops the serve_forever loop.
@@ -250,7 +257,9 @@ class BaseServer:
         deadlock.
         """
         self.__shutdown_request = True
-        self.__is_shut_down.wait()
+        # self.__is_shut_down.wait()
+        self.__is_shut_down.acquire()
+        self.__is_shut_down.release()
 
     def service_actions(self):
         """Called by the serve_forever() loop.
@@ -622,6 +631,11 @@ class ThreadingMixIn:
 
     def process_request(self, request, client_address):
         """Start a new thread to process the request."""
+        try:
+            import threading
+        except ImportError:
+            import dummy_threading as threading
+
         t = threading.Thread(target = self.process_request_thread,
                              args = (request, client_address))
         t.daemon = self.daemon_threads
