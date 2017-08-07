@@ -1,6 +1,9 @@
 import binascii
 import rpcBase
-import uuid
+try:
+	import uuid
+except ImportError:
+	import upy.uuid as uuid
 
 from dcerpc import MSRPCHeader, MSRPCBindAck
 from structure import Structure

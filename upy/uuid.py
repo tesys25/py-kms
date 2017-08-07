@@ -44,8 +44,6 @@ Typical usage:
     UUID('00010203-0405-0607-0809-0a0b0c0d0e0f')
 """
 
-import os
-
 __author__ = 'Ka-Ping Yee <ping@zesty.ca>'
 
 RESERVED_NCS, RFC_4122, RESERVED_MICROSOFT, RESERVED_FUTURE = [
@@ -148,7 +146,7 @@ class UUID(object):
             if len(bytes) != 16:
                 raise ValueError('bytes is not a 16-char string')
             assert isinstance(bytes, bytes_), repr(bytes)
-            int = int_.from_bytes(bytes, byteorder='big')
+            int = int_.from_bytes(bytes, 'big')
         if fields is not None:
             if len(fields) != 6:
                 raise ValueError('fields is not a 6-tuple')
@@ -182,6 +180,9 @@ class UUID(object):
             int &= ~(0xf000 << 64)
             int |= version << 76
         self.__dict__['int'] = int
+        # __dict__ and __setattr__ don't work for micropython
+        if not self.__dict__:
+            self.int = int
 
     def __eq__(self, other):
         if isinstance(other, UUID):
@@ -600,6 +601,7 @@ def uuid3(namespace, name):
 
 def uuid4():
     """Generate a random UUID."""
+    import os
     return UUID(bytes=os.urandom(16), version=4)
 
 def uuid5(namespace, name):
