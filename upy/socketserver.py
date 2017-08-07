@@ -133,10 +133,6 @@ import socket
 import select
 import os
 import errno
-# try:
-#     import threading
-# except ImportError:
-#     import dummy_threading as threading
 try:
     import _thread
 except ImportError:
@@ -211,7 +207,6 @@ class BaseServer:
         """Constructor.  May be extended, do not override."""
         self.server_address = server_address
         self.RequestHandlerClass = RequestHandlerClass
-        # self.__is_shut_down = threading.Event()
         self.__is_shut_down = _thread.allocate_lock()
         self.__shutdown_request = False
 
@@ -230,23 +225,30 @@ class BaseServer:
         self.timeout. If you need to do periodic tasks, do them in
         another thread.
         """
-        # self.__is_shut_down.clear()
         self.__is_shut_down.acquire()
+
+        # Commonly used flag setes
+        READ_ONLY = select.POLLIN | getattr(select, 'POLLPRI', 0) | select.POLLHUP | select.POLLERR
+
+        # Set up the poller
+        poller = select.epoll()
+        poller.register(self.socket, READ_ONLY)
+
+        # Map file descriptors to socket objects
+        fd_to_socket = {self.socket.fileno(): self.socket,
+                            }
+
         try:
             while not self.__shutdown_request:
-                # XXX: Consider using another file descriptor or
-                # connecting to the socket to wake this up instead of
-                # polling. Polling reduces our responsiveness to a
-                # shutdown request and wastes cpu at all other times.
-                r, w, e = _eintr_retry(select.select, [self], [], [],
-                                       poll_interval)
-                if self in r:
+                # events = poller.poll(int(poll_interval * 1000))
+                events = poller.poll(int(poll_interval))
+                # if any(self.socket == fd for fd, flag in events):
+                if any(self.socket == fd_to_socket[fd] for fd, flag in events):
                     self._handle_request_noblock()
 
                 self.service_actions()
         finally:
             self.__shutdown_request = False
-            # self.__is_shut_down.set()
             self.__is_shut_down.release()
 
     def shutdown(self):
@@ -257,7 +259,6 @@ class BaseServer:
         deadlock.
         """
         self.__shutdown_request = True
-        # self.__is_shut_down.wait()
         self.__is_shut_down.acquire()
         self.__is_shut_down.release()
 
