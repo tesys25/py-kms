@@ -1,4 +1,5 @@
 import os
+import sys
 import argparse
 import binascii
 import re
@@ -55,7 +56,9 @@ def main():
 		return
 	if not config['lcid']:
 		# http://stackoverflow.com/questions/3425294/how-to-detect-the-os-default-language-in-python
-		if os.name == 'nt':
+		if sys.implementation.name == 'micropython':
+			config['lcid'] = 1033
+		elif os.name == 'nt':
 			import ctypes
 
 			config['lcid'] = ctypes.windll.kernel32.GetUserDefaultUILanguage()  # TODO: or GetSystemDefaultUILanguage?
