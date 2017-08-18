@@ -1,4 +1,7 @@
-import random
+try:
+	import random
+except ImportError:
+	import upy.fakerandom as random
 import time
 import uuid
 

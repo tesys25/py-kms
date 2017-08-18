@@ -7,7 +7,10 @@
 # $Id$
 #
 from __future__ import print_function
-from struct import pack, unpack, calcsize
+try:
+	from struct import pack, unpack, calcsize
+except ImportError:
+	from ustruct import pack, unpack, calcsize
 
 debug = 0
 
