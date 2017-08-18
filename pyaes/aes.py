@@ -50,8 +50,10 @@
 
 # See the README.md for API details and general information.
 
-
-import struct
+try:
+    import struct
+except ImportError:
+    import ustruct as struct
 
 __all__ = ["AES", "AESModeOfOperationCTR", "AESModeOfOperationCBC", "AESModeOfOperationCFB",
            "AESModeOfOperationECB", "AESModeOfOperationOFB", "AESModesOfOperation", "Counter"]

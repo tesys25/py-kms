@@ -3,7 +3,10 @@ try:
 except ImportError:
 	import upy.fakerandom as random
 import time
-import uuid
+try:
+	import uuid
+except ImportError:
+	import upy.uuid as uuid
 
 APP_ID_WINDOWS = uuid.UUID("55C92734-D682-4D71-983E-D6EC3F16059F")
 APP_ID_OFFICE14 = uuid.UUID("59A52881-A989-479D-AF46-F275C6370663")

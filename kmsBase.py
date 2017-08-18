@@ -2,9 +2,13 @@ import binascii
 import filetimes
 import kmsPidGenerator
 import os
+import os.path
 import sys
 import time
-import uuid
+try:
+	import uuid
+except ImportError:
+	import upy.uuid as uuid
 
 from structure import Structure
 

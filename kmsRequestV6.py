@@ -1,7 +1,10 @@
 import os
 import hashlib
 import hmac
-import struct
+try:
+	import struct
+except ImportError:
+	import ustruct as struct
 import pyaes
 from kmsBase import kmsResponseStruct
 from kmsRequestV5 import kmsRequestV5

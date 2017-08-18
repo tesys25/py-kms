@@ -1,4 +1,7 @@
-import struct
+try:
+	import struct
+except ImportError:
+	import ustruct as struct
 from kmsBase import errorCodes, kmsBase
 
 class kmsRequestUnknown(kmsBase):
