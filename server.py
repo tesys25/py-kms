@@ -35,7 +35,12 @@ def main():
 	parser.add_argument("-s", "--sqlite", dest="sqlite", action="store_const", const=True, default=False, help="Use this flag to store request information from unique clients in an SQLite database.")
 	parser.add_argument("-o", "--log", dest="log", action="store_const", const=True, default=False, help="Use this flag to enable logging to a file.")
 	parser.add_argument("-w", "--hwid", dest="hwid", action="store", default='364F463A8863D35F', help="Use this flag to specify a HWID. The HWID must be an 16-character string of hex characters. The default is \"364F463A8863D35F\".")	
-	config.update(vars(parser.parse_args()))
+	parsed = parser.parse_args()
+	try:
+		config.update(vars(parsed))
+	except NameError:  # vars not supported on micropython
+		config.update(dict((o.dest, getattr(parsed, o.dest)) for o in parser.pos))
+		config.update(dict((o.dest, getattr(parsed, o.dest)) for o in parser.opt))
 	# Sanitize HWID
 	try:
 		config['hwid'] = binascii.a2b_hex(re.sub(r'[^0-9a-fA-F]', '', config['hwid'].strip('0x')))
