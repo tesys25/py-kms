@@ -17,6 +17,12 @@ import rpcBind, rpcRequest
 from dcerpc import MSRPCHeader
 from rpcBase import rpcBase
 
+try:
+	IOError
+except NameError:
+	class IOError(OSError):
+		pass
+
 class V6Server(socketserver.TCPServer):
 	address_family = socket.AF_INET6
 
@@ -78,8 +84,8 @@ def main():
 	try:
 		socket.inet_pton(socket.AF_INET6, config['ip'])
 	except (
-			OSError,  # input address is ipv4
-			IOError,  # ipv6 is unavailable
+			OSError,  # py >= 3.3, pep-3151
+			IOError,  # py < 3.3
 	):
 		server = socketserver.TCPServer((config['ip'], config['port']), kmsServer)
 	else:
