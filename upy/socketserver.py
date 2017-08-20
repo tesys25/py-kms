@@ -128,9 +128,16 @@ BaseServer:
 
 __version__ = "0.4"
 
-
-import socket
-import select
+try:
+    import usocket as socket
+except ImportError:
+    import socket
+else:
+    import socket as micropython_socket
+try:
+    import uselect as select
+except ImportError:
+    import select
 import os
 import errno
 try:
@@ -231,7 +238,7 @@ class BaseServer:
         READ_ONLY = select.POLLIN | getattr(select, 'POLLPRI', 0) | select.POLLHUP | select.POLLERR
 
         # Set up the poller
-        poller = select.epoll()
+        poller = select.poll()
         poller.register(self.socket, READ_ONLY)
 
         # Map file descriptors to socket objects
@@ -240,10 +247,9 @@ class BaseServer:
 
         try:
             while not self.__shutdown_request:
-                # events = poller.poll(int(poll_interval * 1000))
-                events = poller.poll(int(poll_interval))
-                # if any(self.socket == fd for fd, flag in events):
-                if any(self.socket == fd_to_socket[fd] for fd, flag in events):
+                events = poller.poll(int(poll_interval * 1000))
+                if any(self.socket == fd for fd, flag in events):
+                # if any(self.socket == fd_to_socket[fd] for fd, flag in events):
                     self._handle_request_noblock()
 
                 self.service_actions()
@@ -451,7 +457,12 @@ class TCPServer(BaseServer):
         """
         if self.allow_reuse_address:
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.socket.bind(self.server_address)
+        try:
+            micropython_socket
+        except NameError:
+            self.socket.bind(self.server_address)
+        else:
+            self.socket.bind(micropython_socket._resolve_addr(self.server_address))
         # self.server_address = self.socket.getsockname()
 
     def server_activate(self):
@@ -484,7 +495,14 @@ class TCPServer(BaseServer):
         May be overridden.
 
         """
-        return self.socket.accept()
+        try:
+            micropython_socket
+        except NameError:
+            return self.socket.accept()
+        else:
+            s, addr = self.socket.accept()
+            addr = socket.sockaddr(addr)
+            return (s, (socket.inet_ntop(addr[0], addr[1]), addr[2]))
 
     def shutdown_request(self, request):
         """Called to shutdown and close an individual request."""
@@ -764,4 +782,9 @@ class DatagramRequestHandler(BaseRequestHandler):
         self.wfile = BytesIO()
 
     def finish(self):
-        self.socket.sendto(self.wfile.getvalue(), self.client_address)
+        try:
+            micropython_socket
+        except NameError:
+            self.socket.sendto(self.wfile.getvalue(), self.client_address)
+        else:
+            self.socket.sendto(self.wfile.getvalue(), micropython_socket._resolve_addr(self.client_address))
