@@ -120,11 +120,11 @@ class handler(rpcBase.rpcBase):
 		for i in range (0, bind['ctx_num']):
 			ts_uuid = bind['ctx_items'][i].ts()
 			resp = preparedResponses[ts_uuid]
-			response['ctx_items'] += bytes(resp)
+			response['ctx_items'] += resp.__bytes__()
 
 		if self.config['debug']:
 			print("RPC Bind Response:", response.dump())
-			print("RPC Bind Response Bytes:", binascii.b2a_hex(bytes(response)))
+			print("RPC Bind Response Bytes:", binascii.b2a_hex(response.__bytes__()))
 
 		return response
 

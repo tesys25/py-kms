@@ -70,7 +70,7 @@ class kmsRequestV5(kmsBase):
 		return self.generateResponse(iv, encrypted, requestData)
 	
 	def decryptRequest(self, request):
-		encrypted = bytes(request['message'])
+		encrypted = request['message'].__bytes__()
 		iv = request['message']['salt']
 
 		decrypter = pyaes.Decrypter(pyaes.AESModeOfOperationCBC(self.key, iv, v6=self.v6))

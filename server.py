@@ -127,7 +127,7 @@ class kmsServer(socketserver.BaseRequestHandler):
 				print("Error: Invalid RPC request type", packetType)
 				break
 
-			res = bytes(handler.populate())
+			res = handler.populate().__bytes__()
 			self.request.send(res)
 
 			if packetType == rpcBase.packetType['bindReq']:
