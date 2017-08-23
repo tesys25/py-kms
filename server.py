@@ -62,7 +62,7 @@ def main():
 		return
 	if not config['lcid']:
 		# http://stackoverflow.com/questions/3425294/how-to-detect-the-os-default-language-in-python
-		if sys.implementation.name == 'micropython':
+		if hasattr(sys, 'implementation') and sys.implementation.name == 'micropython':
 			config['lcid'] = 1033
 		elif os.name == 'nt':
 			import ctypes
