@@ -236,7 +236,9 @@ class UUID(object):
     @property
     def bytes_le(self):
         bytes = self.bytes
-        return (bytes[4-1::-1] + bytes[6-1:4-1:-1] + bytes[8-1:6-1:-1] +
+        return (bytes_(reversed(bytes[:4])) +
+                bytes_(reversed(bytes[4:6])) +
+                bytes_(reversed(bytes[6:8])) +
                 bytes[8:])
 
     @property
