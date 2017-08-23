@@ -140,8 +140,10 @@ class UUID(object):
         if bytes_le is not None:
             if len(bytes_le) != 16:
                 raise ValueError('bytes_le is not a 16-char string')
-            bytes = (bytes_le[4-1::-1] + bytes_le[6-1:4-1:-1] +
-                     bytes_le[8-1:6-1:-1] + bytes_le[8:])
+            bytes =  (bytes_(reversed(bytes_le[:4])) +
+                      bytes_(reversed(bytes_le[4:6])) +
+                      bytes_(reversed(bytes_le[6:8])) +
+                      bytes_le[8:])
         if bytes is not None:
             if len(bytes) != 16:
                 raise ValueError('bytes is not a 16-char string')
