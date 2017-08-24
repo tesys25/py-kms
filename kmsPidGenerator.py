@@ -59,6 +59,10 @@ pkeyConfigList["office15"] = {
 	"PIDRangeMax" : 234999999
 }
 
+if hasattr(str, 'rjust'):
+	rjust = str.rjust
+else:
+	rjust = lambda s, width, fillchar=' ': fillchar * (width - len(s)) + s
 
 def epidGenerator(appId, version, lcid):
 	# Generate Part 1 & 7: Host Type and KMS Server OS Build
@@ -111,20 +115,20 @@ def epidGenerator(appId, version, lcid):
 
 	# generate the epid string
 	result = []
-	result.append(str(hostOsDict["type"]).rjust(5, "0"))
+	result.append(rjust(str(hostOsDict["type"]), 5, "0"))
 	result.append("-")
-	result.append(str(keyConfig["GroupID"]).rjust(5, "0"))
+	result.append(rjust(str(keyConfig["GroupID"]), 5, "0"))
 	result.append("-")
-	result.append(str(productKeyID // 1000000).rjust(3, "0"))
+	result.append(rjust(str(productKeyID // 1000000), 3, "0"))
 	result.append("-")
-	result.append(str(productKeyID % 1000000).rjust(6, "0"))
+	result.append(rjust(str(productKeyID % 1000000), 6, "0"))
 	result.append("-")
-	result.append(str(licenseChannel).rjust(2, "0"))
+	result.append(rjust(str(licenseChannel), 2, "0"))
 	result.append("-")
 	result.append(str(languageCode))
 	result.append("-")
-	result.append(str(hostOsDict["osBuild"]).rjust(4, "0"))
+	result.append(rjust(str(hostOsDict["osBuild"]), 4, "0"))
 	result.append(".0000-")
-	result.append(str(randomDayNumber).rjust(3, "0"))
-	result.append(str(randomYear).rjust(4, "0"))
+	result.append(rjust(str(randomDayNumber), 3, "0"))
+	result.append(rjust(str(randomYear), 4, "0"))
 	return "".join(result)
