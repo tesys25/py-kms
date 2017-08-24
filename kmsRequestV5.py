@@ -94,7 +94,7 @@ class kmsRequestV5(kmsBase):
 		responsedata['hash'] = result
 
 		encrypter = pyaes.Encrypter(pyaes.AESModeOfOperationCBC(self.key, iv, v6=self.v6))
-		crypted = encrypter.feed(responsedata) + encrypter.feed()
+		crypted = encrypter.feed(responsedata.__bytes__()) + encrypter.feed()
 
 		return bytes(iv), crypted
 
@@ -117,7 +117,7 @@ class kmsRequestV5(kmsBase):
 
 		if self.config['debug']:
 			print("KMS V%d Response: %s" % (self.ver, response.dump()))
-			print("KMS V%d Structue Bytes: %s" % (self.ver, binascii.b2a_hex(bytes(response))))
+			print("KMS V%d Structue Bytes: %s" % (self.ver, binascii.b2a_hex(response.__bytes__())))
 
 		return response
 

@@ -69,7 +69,7 @@ class kmsRequestV6(kmsRequestV5):
 		HMacMsg = bytearray(16)
 		for i in range (0, 16):
 			HMacMsg[i] = (SaltS[i] ^ DSaltS[i]) & 0xff
-		HMacMsg.extend(bytes(message))
+		HMacMsg.extend(message.__bytes__())
 
 		# HMacKey
 		requestTime = decrypted['request']['requestTime']
@@ -82,7 +82,7 @@ class kmsRequestV6(kmsRequestV5):
 		responsedata['hmac'] = digest[16:]
 
 		encrypter = pyaes.Encrypter(pyaes.AESModeOfOperationCBC(self.key, SaltS, v6=True))
-		crypted = encrypter.feed(responsedata) + encrypter.feed()
+		crypted = encrypter.feed(responsedata.__bytes__()) + encrypter.feed()
 
 		return bytes(SaltS), bytes(bytearray(crypted))
 

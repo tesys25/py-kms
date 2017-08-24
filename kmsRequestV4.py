@@ -81,7 +81,7 @@ class kmsRequestV4(kmsBase):
 		requestData = self.RequestV4(self.data)
 
 		response = self.serverLogic(requestData['request'])
-		hash = generateHash(bytearray(bytes(response)))
+		hash = generateHash(bytearray(response.__bytes__()))
 
 		responseData = self.generateResponse(response, hash)
 
@@ -95,7 +95,7 @@ class kmsRequestV4(kmsBase):
 
 		if self.config['debug']:
 			print("KMS V4 Response:", response.dump())
-			print("KMS V4 Response Bytes:", binascii.b2a_hex(bytes(response)))
+			print("KMS V4 Response Bytes:", binascii.b2a_hex(response.__bytes__()))
 
 		return response
 
