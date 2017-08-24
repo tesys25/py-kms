@@ -510,7 +510,7 @@ class TCPServer(BaseServer):
             #explicitly shutdown.  socket.close() merely releases
             #the socket and waits for GC to perform the actual close.
             request.shutdown(socket.SHUT_WR)
-        except OSError:
+        except (OSError, AttributeError):
             pass #some platforms may raise ENOTCONN here
         self.close_request(request)
 
