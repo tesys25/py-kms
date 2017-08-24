@@ -112,11 +112,13 @@ class Structure:
 		for field in self.commonHdr+self.structure:
 			try:
 				data += self.packField(field[0], field[1])
-			except Exception as e:
+			except Exception:
+				import sys
+
 				if field[0] in self.fields:
-					e.args += ("When packing field '%s | %s | %r' in %s" % (field[0], field[1], self[field[0]], self.__class__),)
+					print("When packing field '%s | %s | %r' in %s" % (field[0], field[1], self[field[0]], self.__class__), file=sys.stderr)
 				else:
-					e.args += ("When packing field '%s | %s' in %s" % (field[0], field[1], self.__class__),)
+					print("When packing field '%s | %s' in %s" % (field[0], field[1], self.__class__), file=sys.stderr)
 				raise
 			if self.alignment:
 				if len(data) % self.alignment:
@@ -269,7 +271,10 @@ class Structure:
 		
 		# literal specifier
 		if format[:1] == ':':
-			return bytes(data)
+			try:
+				return data.__bytes__()
+			except AttributeError:
+				return bytes(data)
 
 		# struct like specifier
 		return pack(format, data)

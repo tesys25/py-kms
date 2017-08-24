@@ -60,7 +60,7 @@ class UUID(Structure):
 	)
 
 	def get(self):
-		return uuid.UUID(bytes_le=bytes(self))
+		return uuid.UUID(bytes_le=self.__bytes__())
 
 class kmsRequestStruct(Structure):
 	commonHdr = ()
@@ -138,7 +138,7 @@ class kmsBase:
 						con.close()
 
 		if self.config['debug']:
-			print("KMS Request Bytes:", binascii.b2a_hex(bytes(kmsRequest)))
+			print("KMS Request Bytes:", binascii.b2a_hex(kmsRequest.__bytes__()))
 			print("KMS Request:", kmsRequest.dump())
 
 		clientMachineId = str(kmsRequest['clientMachineId'].get())
