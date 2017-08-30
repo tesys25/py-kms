@@ -7,6 +7,10 @@ import string
 import sys
 import uuid
 import errno
+try:
+	import codecs
+except ImportError:
+	import upy.codecs as codecs
 
 import filetimes, rpcBind, rpcRequest
 from dcerpc import MSRPCHeader, MSRPCBindNak, MSRPCRespHeader
@@ -180,8 +184,8 @@ def createKmsRequestBase():
 	requestDict['previousClientMachineId'] = b'\0' * 16 #requestDict['clientMachineId'] # I'm pretty sure this is supposed to be a null UUID.
 	requestDict['requiredClientCount'] = config['RequiredClientCount']
 	requestDict['requestTime'] = filetimes.timestamp2filetime(time.time())
-	requestDict['machineName'] = (config['machineName'] if (config['machineName'] is not None) else ''.join(random.choice(string.ascii_letters + string.digits) for i in range(random.randint(2,63)))).encode('utf-16le')
-	requestDict['mnPad'] = '\0'.encode('utf-16le') * (63 - len(requestDict['machineName'].decode('utf-16le')))
+	requestDict['machineName'] = codecs.encode(config['machineName'] or ''.join(random.choice(string.ascii_letters + string.digits) for i in range(random.randint(2,63))), 'utf_16_le')
+	requestDict['mnPad'] = codecs.encode('\0', 'utf_16_le') * (63 - codecs.encode(len(requestDict['machineName']), 'utf_16_le'))
 
 	# Debug Stuff
 	if config['debug']:

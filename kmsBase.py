@@ -9,6 +9,10 @@ try:
 	import uuid
 except ImportError:
 	import upy.uuid as uuid
+try:
+	import codecs
+except ImportError:
+	import upy.codecs as codecs
 
 from structure import Structure
 
@@ -240,9 +244,9 @@ class kmsBase:
 		response['versionMajor'] = kmsRequest['versionMajor']
 
 		if not self.config["epid"]:
-			response["kmsEpid"] = kmsPidGenerator.epidGenerator(kmsRequest['applicationId'].get(), kmsRequest['versionMajor'], self.config["lcid"]).encode('utf-16le')
+			response["kmsEpid"] = codecs.encode(kmsPidGenerator.epidGenerator(kmsRequest['applicationId'].get(), kmsRequest['versionMajor'], self.config["lcid"]), 'utf_16_le')
 		else:
-			response["kmsEpid"] = self.config["epid"].encode('utf-16le')
+			response["kmsEpid"] = codecs.encode(self.config["epid"], 'utf_16_le')
 		response['clientMachineId'] = kmsRequest['clientMachineId']
 		response['responseTime'] = kmsRequest['requestTime']
 		if self.config["CurrentClientCount"]:
@@ -262,7 +266,7 @@ class kmsBase:
 					data = cur.fetchone()
 					#print "Data:", data
 					if data[6]:
-						response["kmsEpid"] = data[6].encode('utf-16le')
+						response["kmsEpid"] = codecs.encode(data[6], 'utf_16_le')
 					else:
 						cur.execute("UPDATE clients SET kmsEpid=? WHERE clientMachineId=?;", (str(response["kmsEpid"].decode('utf-16le')), str(kmsRequest['clientMachineId'].get())))
 
