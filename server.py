@@ -71,7 +71,10 @@ def main():
 		else:
 			import locale
 
-			config['lcid'] = next(k for k, v in locale.windows_locale.items() if v == locale.getdefaultlocale()[0])
+			try:
+				config['lcid'] = next(k for k, v in locale.windows_locale.items() if v == locale.getdefaultlocale()[0])
+			except StopIteration:
+				config['lcid'] = 1033
 	if config['debug']:
 		config['verbose'] = True
 	try:
