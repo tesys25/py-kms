@@ -28,7 +28,7 @@ class kmsRequestV6(kmsRequestV5):
 			('hmac',    '16s'),
 		)
 
-	key = bytearray([ 0xA9, 0x4A, 0x41, 0x95, 0xE2, 0x01, 0x43, 0x2D, 0x9B, 0xCB, 0x46, 0x04, 0x05, 0xD8, 0x4A, 0x21 ])
+	key = b'\xA9\x4A\x41\x95\xE2\x01\x43\x2D\x9B\xCB\x46\x04\x05\xD8\x4A\x21'
 
 	v6 = True
 
@@ -36,7 +36,7 @@ class kmsRequestV6(kmsRequestV5):
 
 	def encryptResponse(self, request, decrypted, response):
 		randomSalt = bytearray(os.urandom(16))
-		result = hashlib.sha256(randomSalt).digest()
+		result = hashlib.sha256(bytes(randomSalt)).digest()
 
 		SaltC = bytearray(request['message']['salt'])
 		DSaltC = bytearray(decrypted['salt'])

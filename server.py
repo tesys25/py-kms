@@ -91,6 +91,9 @@ def main():
 			IOError,  # py < 3.3
 	):
 		server = socketserver.TCPServer((config['ip'], config['port']), kmsServer)
+	except AttributeError:  # py < 2.7
+		print("Python version too old to call socket.inet_pton, use IP v4 only")
+		server = socketserver.TCPServer((config['ip'], config['port']), kmsServer)
 	else:
 		server = V6Server((config['ip'], config['port']), kmsServer)
 	server.timeout = 5

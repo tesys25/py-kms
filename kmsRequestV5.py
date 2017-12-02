@@ -52,7 +52,7 @@ class kmsRequestV5(kmsBase):
 			('hash',     '32s'),
 		)
 
-	key = bytearray([ 0xCD, 0x7E, 0x79, 0x6F, 0x2A, 0xB2, 0x5D, 0xCB, 0x55, 0xFF, 0xC8, 0xEF, 0x83, 0x64, 0xC4, 0x70 ])
+	key = b'\xCD\x7E\x79\x6F\x2A\xB2\x5D\xCB\x55\xFF\xC8\xEF\x83\x64\xC4\x70'
 
 	v6 = False
 
@@ -80,7 +80,7 @@ class kmsRequestV5(kmsBase):
 
 	def encryptResponse(self, request, decrypted, response):
 		randomSalt = bytearray(os.urandom(16))
-		result = hashlib.sha256(randomSalt).digest()
+		result = hashlib.sha256(bytes(randomSalt)).digest()
 
 		iv = bytearray(request['message']['salt'])
 
