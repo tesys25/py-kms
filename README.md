@@ -10,7 +10,6 @@ py-kms is a port of node-kms by [markedsword](http://forums.mydigitallife.info/m
 - Python 2.6 or higher, micropython v1.9 or higher.
 - Python 2.6 needs the "argparse" module installed.
 - Micropython needs libpcre and libffi, and modules in micropythonlib, check section below.
-- If the "pytz" module is installed, the "Request Time" in the verbose output will be converted into local time. Otherwise, it will be in UTC.
 
 # Usage
 - To start the server, execute `python server.py [listen_address] [port]`. The default listening address is `0.0.0.0` (all interfaces) and the default port is `1688`.

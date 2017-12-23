@@ -150,18 +150,10 @@ class kmsBase:
 		skuId = str(kmsRequest['skuId'].get())
 		requestDatetime = filetimes.filetime2timestamp(kmsRequest['requestTime'])
 
-		# Try and localize the request time, if pytz is available
-		try:
-			import timezones
-			from pytz import utc
-			import datetime
-			dt = datetime.datetime.fromtimestamp(requestDatetime)
-			local_dt = utc.localize(dt).astimezone(timezones.localtz()).strftime('%Y-%m-%d %H:%M:%S %Z (UTC%z)')
-		except ImportError:
-			try:
-				local_dt = time.strftime('%Y-%m-%d %H:%M:%S %Z (UTC%z)', time.localtime(requestDatetime))
-			except TypeError:  # micropython-time accept timestamp stead of struct_time
-				local_dt = time.strftime('%Y-%m-%d %H:%M:%S %Z', requestDatetime)
+		if not hasattr(time, 'libc'):
+			local_dt = time.strftime('%Y-%m-%d %H:%M:%S (UTC%z)', time.localtime(requestDatetime))
+		else:  # micropython-time doesn't support time zone
+			local_dt = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(requestDatetime))
 
 		# activation threshold:
 		# https://docs.microsoft.com/en-us/windows/deployment/volume-activation/activate-windows-10-clients-vamt
