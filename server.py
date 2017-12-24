@@ -23,10 +23,10 @@ except NameError:
 	class IOError(OSError):
 		pass
 
-try:
+if hasattr(os, 'fork'):
 	class TCPServer(socketserver.ForkingTCPServer):
 		pass
-except AttributeError:  # os.fork not implemented on Windows
+else:  # os.fork not implemented on Windows
 	class TCPServer(socketserver.ThreadingTCPServer):
 		pass
 
