@@ -37,14 +37,8 @@ def main():
 	if config['debug']:
 		config['verbose'] = True
 	updateConfig()
-	try:
-		socket.inet_pton(socket.AF_INET6, config['ip'])
-	except OSError:
-		s = socket.socket()
-	else:
-		s = socket.socket(socket.AF_INET6)
 	print("Connecting to %s on port %d..." % (config['ip'], config['port']))
-	s.connect((config['ip'], config['port']))
+	s = socket.create_connection((config['ip'], config['port']))
 	if config['verbose']:
 		print("Connection successful!")
 	binder = rpcBind.handler(None, config)
@@ -185,7 +179,7 @@ def createKmsRequestBase():
 	requestDict['requiredClientCount'] = config['RequiredClientCount']
 	requestDict['requestTime'] = filetimes.timestamp2filetime(time.time())
 	requestDict['machineName'] = codecs.encode(config['machineName'] or ''.join(random.choice(string.ascii_letters + string.digits) for i in range(random.randint(2,63))), 'utf_16_le')
-	requestDict['mnPad'] = codecs.encode('\0', 'utf_16_le') * (63 - codecs.encode(len(requestDict['machineName']), 'utf_16_le'))
+	requestDict['mnPad'] = codecs.encode('\0', 'utf_16_le') * (63 - len(codecs.decode(requestDict['machineName'], 'utf_16_le')))
 
 	# Debug Stuff
 	if config['debug']:

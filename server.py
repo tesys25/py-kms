@@ -23,8 +23,12 @@ except NameError:
 	class IOError(OSError):
 		pass
 
-class V6Server(socketserver.TCPServer):
-	address_family = socket.AF_INET6
+try:
+	class TCPServer(socketserver.ForkingTCPServer):
+		pass
+except AttributeError:  # os.fork not implemented on Windows
+	class TCPServer(socketserver.ThreadingTCPServer):
+		pass
 
 config = {}
 
@@ -84,18 +88,11 @@ def main():
 		config['dbSupport'] = False
 	else:
 		config['dbSupport'] = True
+	TCPServer.address_family = socket.getaddrinfo(config['ip'], config['port'], 0, socket.SOCK_DGRAM)[0][0]
 	try:
-		socket.inet_pton(socket.AF_INET6, config['ip'])
-	except (
-			OSError,  # py >= 3.3, pep-3151
-			IOError,  # py < 3.3
-	):
-		server = socketserver.TCPServer((config['ip'], config['port']), kmsServer)
-	except AttributeError:  # py < 2.7
-		print("Python version too old to call socket.inet_pton, use IP v4 only")
-		server = socketserver.TCPServer((config['ip'], config['port']), kmsServer)
-	else:
-		server = V6Server((config['ip'], config['port']), kmsServer)
+		server = TCPServer((config['ip'], config['port']), kmsServer)
+	except OSError:  # micropython can't recognize 2-tuple server_address
+		server = TCPServer((config['ip'], config['port'], socket.AF_INET6), kmsServer)
 	server.timeout = 5
 	print("TCP server listening at %s on port %d." % (config['ip'],config['port']))
 	server.serve_forever()
