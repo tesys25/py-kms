@@ -39,16 +39,10 @@ class kmsRequestV6(kmsRequestV5):
 		result = hashlib.sha256(bytes(randomSalt)).digest()
 
 		SaltC = bytearray(request['message']['salt'])
-		DSaltC = bytearray(decrypted['salt'])
-
+		XorSalts = bytearray(pyaes.AES(self.key, v6=self.v6).decrypt(SaltC))
 		randomStuff = bytearray(16)
 		for i in range(0,16):
-			randomStuff[i] = (SaltC[i] ^ DSaltC[i] ^ randomSalt[i]) & 0xff
-
-		# XorSalts
-		XorSalts = bytearray(16)
-		for i in range (0, 16):
-			XorSalts[i] = (SaltC[i] ^ DSaltC[i]) & 0xff
+			randomStuff[i] = (XorSalts[i] ^ randomSalt[i]) & 0xff
 
 		message = self.DecryptedResponse.Message()
 		message['response'] = response
@@ -72,7 +66,7 @@ class kmsRequestV6(kmsRequestV5):
 		HMacMsg.extend(message.__bytes__())
 
 		# HMacKey
-		requestTime = decrypted['request']['requestTime']
+		requestTime = decrypted['requestTime']
 		HMacKey = self.getMACKey(requestTime)
 		HMac = hmac.new(HMacKey, bytes(HMacMsg), hashlib.sha256)
 		digest = HMac.digest()

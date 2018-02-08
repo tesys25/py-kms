@@ -11,8 +11,7 @@ class kmsRequestV5(kmsBase):
 			commonHdr = ()
 			structure = (
 				('salt',      '16s'),
-				('encrypted', '236s'), #kmsRequestStruct
-				('padding',   ':'),
+				('encrypted', '240s'), #kmsRequestStruct
 			)
 
 		commonHdr = ()
@@ -22,13 +21,6 @@ class kmsRequestV5(kmsBase):
 			('versionMinor', '<H'),
 			('versionMajor', '<H'),
 			('message',      ':', Message),
-		)
-
-	class DecryptedRequest(Structure):
-		commonHdr = ()
-		structure = (
-			('salt',    '16s'),
-			('request', ':', kmsRequestStruct),
 		)
 
 	class ResponseV5(Structure):
@@ -63,20 +55,20 @@ class kmsRequestV5(kmsBase):
 	
 		decrypted = self.decryptRequest(requestData)
 
-		responseBuffer = self.serverLogic(decrypted['request'])
+		responseBuffer = self.serverLogic(decrypted)
 	
 		iv, encrypted = self.encryptResponse(requestData, decrypted, responseBuffer)
 
 		return self.generateResponse(iv, encrypted, requestData)
 	
 	def decryptRequest(self, request):
-		encrypted = request['message'].__bytes__()
+		encrypted = request['message']['encrypted']
 		iv = request['message']['salt']
 
 		decrypter = pyaes.Decrypter(pyaes.AESModeOfOperationCBC(self.key, iv, v6=self.v6))
 		decrypted = decrypter.feed(encrypted) + decrypter.feed()
 
-		return self.DecryptedRequest(decrypted)
+		return kmsRequestStruct(decrypted)
 
 	def encryptResponse(self, request, decrypted, response):
 		randomSalt = bytearray(os.urandom(16))
@@ -84,9 +76,10 @@ class kmsRequestV5(kmsBase):
 
 		iv = bytearray(request['message']['salt'])
 
+		XorSalts = pyaes.AES(self.key, v6=self.v6).decrypt(iv)
 		randomStuff = bytearray(16)
 		for i in range(0,16):
-			randomStuff[i] = (bytearray(decrypted['salt'])[i] ^ iv[i] ^ randomSalt[i]) & 0xff
+			randomStuff[i] = (bytearray(XorSalts)[i] ^ randomSalt[i]) & 0xff
 
 		responsedata = self.DecryptedResponse()
 		responsedata['response'] = response
@@ -122,18 +115,11 @@ class kmsRequestV5(kmsBase):
 		return response
 
 	def generateRequest(self, requestBase):
-		esalt = bytearray(os.urandom(16))
-
-		dsalt = pyaes.AESModeOfOperationCBC(self.key, iv=esalt, v6=self.v6).decrypt(esalt)
-
-		decrypted = self.DecryptedRequest()
-		decrypted['salt'] = dsalt
-		decrypted['request'] = requestBase
-
-		encrypter = pyaes.Encrypter(pyaes.AESModeOfOperationCBC(self.key, esalt, v6=self.v6))
-		crypted = encrypter.feed(decrypted) + encrypter.feed()
-
-		message = self.RequestV5.Message(crypted)
+		salt = os.urandom(16)
+		message = self.RequestV5.Message()
+		message['salt'] = salt
+		encrypter = pyaes.Encrypter(pyaes.AESModeOfOperationCBC(self.key, salt, v6=self.v6))
+		message['encrypted'] = encrypter.feed(requestBase) + encrypter.feed()
 
 		request = self.RequestV5()
 		request['versionMinor'] = requestBase['versionMinor']
