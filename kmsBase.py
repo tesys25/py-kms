@@ -1,6 +1,6 @@
 import binascii
 import filetimes
-import kmsPidGenerator
+from kmsPidGenFromDB import epidGenerator
 import os
 import os.path
 import sys
@@ -159,7 +159,7 @@ class kmsBase:
 		# https://docs.microsoft.com/en-us/windows/deployment/volume-activation/activate-windows-10-clients-vamt
 		kmsdata = parse(tokenize(open(kmsdb)), lesslist=False)['KmsData'][0]
 		appName, skuName, currentClientCount = applicationId, skuId, 25
-		for app in kmsdata['AppItem']:
+		for app in kmsdata['AppItems'][0]['AppItem']:
 			max_activ_thld = 0
 			for kms in app['KmsItem']:
 				max_activ_thld = max(max_activ_thld, int(kms.get('@NCountPolicy', 25)))
@@ -236,7 +236,7 @@ class kmsBase:
 		response['versionMajor'] = kmsRequest['versionMajor']
 
 		if not self.config["epid"]:
-			response["kmsEpid"] = codecs.encode(kmsPidGenerator.epidGenerator(kmsRequest['applicationId'].get(), kmsRequest['versionMajor'], self.config["lcid"]), 'utf_16_le')
+			response["kmsEpid"] = codecs.encode(epidGenerator(kmsRequest['kmsCountedId'].get(), kmsRequest['versionMajor'], self.config["lcid"]), 'utf_16_le')
 		else:
 			response["kmsEpid"] = codecs.encode(self.config["epid"], 'utf_16_le')
 		response['clientMachineId'] = kmsRequest['clientMachineId']
