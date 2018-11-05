@@ -1,13 +1,34 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿﻿<?xml version="1.0" encoding="utf-8"?>
 
-<KmsData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="1.6" Author="Hotbird64" xsi:noNamespaceSchemaLocation="KmsDataBase.xsd">
+<KmsData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1.7" Author="Hotbird64" xsi:noNamespaceSchemaLocation="KmsDataBase.xsd">
+
+	<WinBuilds>
+		<WinBuild BuildNumber="1057" DisplayName="Windows NT 3.51" PlatformId="55041" />
+		<WinBuild BuildNumber="1381" DisplayName="Windows NT 4.0" PlatformId="55041" />
+		<WinBuild BuildNumber="2195" DisplayName="Windows 2000" PlatformId="55041" />
+		<WinBuild BuildNumber="2600" DisplayName="Windows XP 32-bit" PlatformId="55041" />
+		<WinBuild BuildNumber="3790" DisplayName="Windows Server 2003 / XP 64-bit" PlatformId="55041" MayBeServer="true" />
+		<WinBuild BuildNumber="6000" DisplayName="Windows Vista / Server 2008 without SP" PlatformId="55041" MayBeServer="true" />
+		<WinBuild BuildNumber="6001" DisplayName="Windows Vista / Server 2008 SP1" PlatformId="55041" MayBeServer="true" />
+		<WinBuild BuildNumber="6002" DisplayName="Windows Vista / Server 2008 SP2" PlatformId="55041" MayBeServer="true" UseForEpid="true" />
+		<WinBuild BuildNumber="7600" DisplayName="Windows 7 / Server 2008 R2 without SP" PlatformId="55041" MayBeServer="true" />
+		<WinBuild BuildNumber="7601" DisplayName="Windows 7 / Server 2008 R2 SP1" PlatformId="55041" MayBeServer="true" UseForEpid="true" />
+		<WinBuild BuildNumber="9200" DisplayName="Windows 8 / Server 2012" PlatformId="5426" MayBeServer="true" UseForEpid="true" UsesNDR64="true" />
+		<WinBuild BuildNumber="9600" DisplayName="Windows 8.1 / Server 2012 R2" PlatformId="6401" MayBeServer="true" UseForEpid="true" UsesNDR64="true" />
+		<WinBuild BuildNumber="10240" DisplayName="Windows 10 1507" PlatformId="3612" UsesNDR64="true" />
+		<WinBuild BuildNumber="14393" DisplayName="Windows 10 1607 / Server 2016" PlatformId="3612" MayBeServer="true" UseForEpid="true" UsesNDR64="true" />
+		<WinBuild BuildNumber="15063" DisplayName="Windows 10 1703" PlatformId="3612" UsesNDR64="true" />
+		<WinBuild BuildNumber="16299" DisplayName="Windows 10 1709" PlatformId="3612" UsesNDR64="true" />
+		<WinBuild BuildNumber="17134" DisplayName="Windows 10 1803" PlatformId="3612" UsesNDR64="true" />
+		<WinBuild BuildNumber="17763" DisplayName="Windows 10 1809 / Server 2019" PlatformId="3612" MayBeServer="true" UseForEpid="true" UsesNDR64="true" />
+	</WinBuilds>
 
 	<CsvlkItems>
-		<CsvlkItem DisplayName="Windows 10 China Government" VlmcsdIndex="4" GroupId="3858" MinKeyId="15000000" MaxKeyId="999999999" IniFileName="WinChinaGov" EPid="06401-03858-320-801028-03-1033-9600.0000-2802018" Id="ecc0774a-aed3-4e1a-b815-2b31781adfea">
+		<CsvlkItem DisplayName="Windows 10 China Government" VlmcsdIndex="4" GroupId="3858" MinKeyId="15000000" MaxKeyId="999999999" IniFileName="WinChinaGov" EPid="03612-03858-095-132680-03-1033-14393.0000-2912018" Id="ecc0774a-aed3-4e1a-b815-2b31781adfea">
 			<Activate KmsItem="7ba0bf23-d0f5-4072-91d9-d55af5a481b6" />
 		</CsvlkItem>
 
-		<CsvlkItem DisplayName="Windows Server 2019" VlmcsdIndex="0" GroupId="206" MinKeyId="551000000" MaxKeyId="570999999" IniFileName="Windows" EPid="06401-00206-566-174993-03-1033-9600.0000-2802018" Id="2e7a9ad1-a849-4b56-babe-17d5a29fe4b4">
+		<CsvlkItem DisplayName="Windows Server 2019" VlmcsdIndex="0" GroupId="206" MinKeyId="551000000" MaxKeyId="570999999" IniFileName="Windows" EPid="03612-00206-570-514277-03-1033-14393.0000-2912018" Id="2e7a9ad1-a849-4b56-babe-17d5a29fe4b4">
 			<Activate KmsItem="58e2134f-8e11-4d17-9cb2-91069c151148" />
 			<Activate KmsItem="7fde5219-fbfa-484a-82c9-34d1ad53e856" />
 			<Activate KmsItem="3c40b358-5948-45af-923b-53d21fcc7e79" />
@@ -376,19 +397,19 @@
 			<Activate KmsItem="33e156e4-b76f-4a52-9f91-f641dd95ac48" />
 		</CsvlkItem>
 
-		<CsvlkItem DisplayName="Office 2019" VlmcsdIndex="5" GroupId="206" MinKeyId="666000000" MaxKeyId="685999999" IniFileName="Office2019" MinActiveClients="10" EPid="06401-00206-678-008369-03-1033-9600.0000-2802018" Id="70512334-47b4-44db-a233-be5ea33b914c">
+		<CsvlkItem DisplayName="Office 2019" VlmcsdIndex="5" GroupId="206" MinKeyId="666000000" MaxKeyId="685999999" IniFileName="Office2019" EPid="03612-00206-673-556128-03-1033-14393.0000-2912018" Id="70512334-47b4-44db-a233-be5ea33b914c">
 			<Activate KmsItem="617d9eb1-ef36-4f82-86e0-a65ae07b96c6" />
 		</CsvlkItem>
 
-		<CsvlkItem DisplayName="Office 2016" VlmcsdIndex="3" GroupId="206" MinKeyId="437000000" MaxKeyId="458999999" IniFileName="Office2016" MinActiveClients="10" EPid="06401-00206-456-865118-03-1033-9600.0000-2802018" Id="98ebfe73-2084-4c97-932c-c0cd1643bea7">
+		<CsvlkItem DisplayName="Office 2016" VlmcsdIndex="3" GroupId="206" MinKeyId="437000000" MaxKeyId="458999999" IniFileName="Office2016" EPid="03612-00206-448-699935-03-1033-14393.0000-2912018" Id="98ebfe73-2084-4c97-932c-c0cd1643bea7">
 			<Activate KmsItem="85b5f61b-320b-4be3-814a-b76b2bfafc82" />
 		</CsvlkItem>
 
-		<CsvlkItem DisplayName="Office 2013" VlmcsdIndex="2" GroupId="206" MinKeyId="234000000" MaxKeyId="255999999" IniFileName="Office2013" MinActiveClients="10" EPid="06401-00206-243-662026-03-1033-9600.0000-2802018" Id="2e28138a-847f-42bc-9752-61b03fff33cd">
+		<CsvlkItem DisplayName="Office 2013" VlmcsdIndex="2" GroupId="206" MinKeyId="234000000" MaxKeyId="255999999" IniFileName="Office2013" EPid="03612-00206-235-204727-03-1033-14393.0000-2912018" Id="2e28138a-847f-42bc-9752-61b03fff33cd">
 			<Activate KmsItem="e6a6f1bf-9d40-40c3-aa9f-c77ba21578c0" />
 		</CsvlkItem>
 
-		<CsvlkItem DisplayName="Office 2010" VlmcsdIndex="1" GroupId="96" MinKeyId="199000000" MaxKeyId="217999999" IniFileName="Office2010" MinActiveClients="10" EPid="06401-00096-208-497764-03-1033-9600.0000-2802018" Id="bfe7a195-4f8f-4f0b-a622-cf13c7d16864">
+		<CsvlkItem DisplayName="Office 2010" VlmcsdIndex="1" GroupId="96" MinKeyId="199000000" MaxKeyId="217999999" IniFileName="Office2010" EPid="03612-00096-216-351471-03-1033-14393.0000-2912018" Id="bfe7a195-4f8f-4f0b-a622-cf13c7d16864">
 			<Activate KmsItem="e85af946-2e25-47b7-83e1-bebcebeac611" />
 		</CsvlkItem>
 
@@ -585,7 +606,7 @@
 
 		</AppItem>
 
-		<AppItem DisplayName="Office2010" VlmcsdIndex="1" MinActiveClients="10" Id="59a52881-a989-479d-af46-f275c6370663">
+		<AppItem DisplayName="Office2010" VlmcsdIndex="1" Id="59a52881-a989-479d-af46-f275c6370663" MinActiveClients="10">
 
 			<KmsItem DisplayName="Office 2010" Id="e85af946-2e25-47b7-83e1-bebcebeac611" IsPreview="false" CanMapToDefaultCsvlk="false" DefaultKmsProtocol="4.0" NCountPolicy="5">
 				<SkuItem DisplayName="Office Access 2010" Id="8ce7e872-188c-4b98-9d90-f8f90b7aad02" Gvlk="V7Y44-9T38C-R2VJK-666HK-T7DDX" />
@@ -611,7 +632,7 @@
 
 		</AppItem>
 
-		<AppItem DisplayName="Office2013+" VlmcsdIndex="5" MinActiveClients="10" Id="0ff1ce15-a989-479d-af46-f275c6370663">
+		<AppItem DisplayName="Office2013+" VlmcsdIndex="5" Id="0ff1ce15-a989-479d-af46-f275c6370663" MinActiveClients="10">
 
 			<KmsItem DisplayName="Office 2013" Id="e6a6f1bf-9d40-40c3-aa9f-c77ba21578c0" IsPreview="false" CanMapToDefaultCsvlk="false" DefaultKmsProtocol="5.0" NCountPolicy="5">
 				<SkuItem DisplayName="Office Access 2013" Id="6ee7622c-18d8-4005-9fb7-92db644a279b" Gvlk="NG2JY-H4JBT-HQXYP-78QH9-4JM2D" />

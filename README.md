@@ -3,7 +3,8 @@ py-kms is a port of node-kms by [markedsword](http://forums.mydigitallife.info/m
 
 # Features
 - Responds to V4, V5, and V6 KMS requests.
-- Supports activating Windows 7/8/8.1/10/2008R2/2012/2012R2/2016 and Office 2010/2013/2016.
+- Supports activating all versions after Windows Vista / 2008 and Office 2010.
+- If you do want to activate a new version with correct csvlk (not necessary unless you want to pretend an official server), generate a new KmsDataBase.xml using License Manager by Hotbird64 and replace the one in this repo.
 - It's written in Python.
 
 # Dependencies
