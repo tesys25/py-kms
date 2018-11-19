@@ -1,6 +1,6 @@
 import binascii
 import filetimes
-from kmsPidGenFromDB import epidGenerator
+from kmsPidGenFromDB import epidGenerator, kmsdb
 import os
 import os.path
 import sys
@@ -24,8 +24,6 @@ except ImportError:
 
 from xmltok import tokenize
 from uxml2dict import parse
-
-kmsdb = os.path.join(os.path.dirname(__file__), 'KmsDataBase.xml')
 
 licenseStates = {
 	0 : "Unlicensed",

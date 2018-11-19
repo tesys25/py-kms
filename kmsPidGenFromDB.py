@@ -1,3 +1,4 @@
+import os.path
 try:
     import random
 except ImportError:
@@ -10,6 +11,7 @@ except ImportError:
 
 from xmltok import tokenize
 from uxml2dict import parse
+kmsdb = os.path.join(os.path.dirname(__file__), 'KmsDataBase.xml')
 
 platform_id = 3612
 
@@ -24,7 +26,7 @@ os_build = '17763.0000'
 
 def epidGenerator(kmsId, version, lcid):
     # Generate Part 2: Group ID and Product Key ID Range
-    xml = parse(tokenize(open('KmsDataBase.xml')), lesslist=False)
+    xml = parse(tokenize(open(kmsdb)), lesslist=False)
     for item in xml['KmsData'][0]['CsvlkItems'][0]['CsvlkItem']:
         if '@VlmcsdIndex' in item and kmsId in [uuid.UUID(kms_item['@KmsItem']) for kms_item in item['Activate']]:
             group_id, key_id_min, key_id_max = int(item['@GroupId']), int(item['@MinKeyId']), int(item['@MaxKeyId'])
