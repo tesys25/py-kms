@@ -54,13 +54,16 @@ class CtxItemArray:
 
 	def __str__(self):
 		"""
-        In python 2, func `bytes` is alias of `str` and redirect to `__str__`,
-        workaround here is to redirect back to `__bytes__`
-        """
+		In python 2, func `bytes` is alias of `str` and redirect to `__str__`,
+		workaround here is to redirect back to `__bytes__`
+		"""
 		if str is bytes:
 			return self.__bytes__()
 		else:
 			return super(CtxItemArray, self).__str__()
+
+	def __repr__(self):
+		return str(self.data)
 
 	def __getitem__(self, i):
 		return CtxItem(self.data[(len(CtxItem()) * i):])
@@ -96,7 +99,8 @@ class handler(rpcBase.rpcBase):
 		response['ver_major'] = request['ver_major']
 		response['ver_minor'] = request['ver_minor']
 		response['type'] = self.packetType['bindAck']
-		response['flags'] = self.packetFlags['firstFrag'] | self.packetFlags['lastFrag'] | self.packetFlags['multiplex']
+		response['flags'] = self.packetFlags['firstFrag'] | self.packetFlags['lastFrag']
+		response['flags'] |= request['flags'] & self.packetFlags['multiplex']
 		response['representation'] = request['representation']
 		response['frag_len'] = 36 + bind['ctx_num'] * 24
 		response['auth_len'] = request['auth_len']
@@ -113,7 +117,7 @@ class handler(rpcBase.rpcBase):
 
 		preparedResponses = {}
 		preparedResponses[uuidNDR32] = CtxItemResult(0, 0, uuidNDR32, 2)
-		preparedResponses[uuidNDR64] = CtxItemResult(2, 2, uuidEmpty, 0)
+		preparedResponses[uuidNDR64] = CtxItemResult(0, 0, uuidNDR64, 1)
 		preparedResponses[uuidTime] = CtxItemResult(3, 3, uuidEmpty, 0)
 
 		response['ctx_items'] = b''
