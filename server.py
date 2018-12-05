@@ -2,7 +2,10 @@ import os
 import sys
 import argparse
 import binascii
-import re
+try:
+	import re
+except ImportError:
+	import ure as re
 import socket
 try:
 	import socketserver
@@ -54,7 +57,7 @@ def main():
 		config.update(dict((o.dest, getattr(parsed, o.dest)) for o in parser.opt))
 	# Sanitize HWID
 	try:
-		config['hwid'] = binascii.a2b_hex(re.sub(r'[^0-9a-fA-F]', '', config['hwid'].strip('0x')))
+		config['hwid'] = binascii.a2b_hex(''.join([e for e in config['hwid'].strip('0x') if re.match(r'[0-9a-fA-F]', e)]))
 		if len(binascii.b2a_hex(config['hwid'])) < 16:
 			print("Error: HWID \"%s\" is invalid. Hex string is too short." % binascii.b2a_hex(config['hwid']))
 			return
