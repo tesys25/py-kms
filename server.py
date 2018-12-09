@@ -17,8 +17,7 @@ except ImportError:
 import errno
 
 import rpcBind, rpcRequest
-from dcerpc import MSRPCHeader
-from rpcBase import rpcBase
+from dcerpc import MSRPCHeader, MSRPC_BIND, MSRPC_REQUEST, MSRPC_ALTERCTX
 
 try:
 	IOError
@@ -121,11 +120,11 @@ class kmsServer(socketserver.BaseRequestHandler):
 			# data = bytearray(data.strip())
 			# print binascii.b2a_hex(str(data))
 			packetType = MSRPCHeader(data)['type']
-			if packetType == rpcBase.packetType['bindReq']:
+			if packetType in (MSRPC_BIND, MSRPC_ALTERCTX):
 				if config['verbose']:
 					print("RPC bind request received.")
 				handler = rpcBind.handler(data, config)
-			elif packetType == rpcBase.packetType['request']:
+			elif packetType == MSRPC_REQUEST:
 				if config['verbose']:
 					print("Received activation request.")
 				handler = rpcRequest.handler(data, config)
@@ -136,10 +135,10 @@ class kmsServer(socketserver.BaseRequestHandler):
 			res = handler.populate().__bytes__()
 			self.request.send(res)
 
-			if packetType == rpcBase.packetType['bindReq']:
+			if packetType == MSRPC_BIND:
 				if config['verbose']:
 					print("RPC bind acknowledged.")
-			elif packetType == rpcBase.packetType['request']:
+			elif packetType == MSRPC_REQUEST:
 				if config['verbose']:
 					print("Responded to activation request.")
 				break

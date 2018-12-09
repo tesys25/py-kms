@@ -5,7 +5,7 @@ try:
 except ImportError:
 	import upy.uuid as uuid
 
-from dcerpc import MSRPCHeader, MSRPCBindAck
+from dcerpc import MSRPCHeader, MSRPCBindAck, MSRPC_BINDACK, MSRPC_BIND, MSRPC_ALTERCTX, MSRPC_ALTERCTX_R
 from structure import Structure
 
 uuidNDR32 = uuid.UUID('8a885d04-1ceb-11c9-9fe8-08002b104860')
@@ -98,11 +98,15 @@ class handler(rpcBase.rpcBase):
 
 		response['ver_major'] = request['ver_major']
 		response['ver_minor'] = request['ver_minor']
-		response['type'] = self.packetType['bindAck']
 		response['flags'] = self.packetFlags['firstFrag'] | self.packetFlags['lastFrag']
-		response['flags'] |= request['flags'] & self.packetFlags['multiplex']
+		if request['type'] == MSRPC_BIND:
+			response['type'] = MSRPC_BINDACK
+			response['flags'] |= request['flags'] & self.packetFlags['multiplex']
+		elif request['type'] == MSRPC_ALTERCTX:
+			response['type'] = MSRPC_ALTERCTX_R
+		else:
+			raise TypeError('Unknown RPC request type for bind like handler: %s' % response['type'])
 		response['representation'] = request['representation']
-		response['frag_len'] = 36 + bind['ctx_num'] * 24
 		response['auth_len'] = request['auth_len']
 		response['call_id'] = request['call_id']
 
@@ -111,14 +115,31 @@ class handler(rpcBase.rpcBase):
 		response['assoc_group'] = 0x1063bf3f
 
 		port = str(self.config['port']).encode()
-		response['SecondaryAddrLen'] = len(port) + 1
-		response['SecondaryAddr'] = port
+		if request['type'] == MSRPC_BIND:
+			response['SecondaryAddrLen'] = len(port) + 1
+			response['SecondaryAddr'] = port
+			response['frag_len'] = 36 + bind['ctx_num'] * 24
+		elif request['type'] == MSRPC_ALTERCTX:
+			response['SecondaryAddrLen'] = 0
+			response['frag_len'] = 32 + bind['ctx_num'] * 24
+		else:
+			raise TypeError('Unknown RPC request type for bind like handler: %s' % response['type'])
 		response['ctx_num'] = bind['ctx_num']
 
 		preparedResponses = {}
-		preparedResponses[uuidNDR32] = CtxItemResult(0, 0, uuidNDR32, 2)
-		preparedResponses[uuidNDR64] = CtxItemResult(0, 0, uuidNDR64, 1)
-		preparedResponses[uuidTime] = CtxItemResult(3, 3, uuidEmpty, 0)
+		if request['type'] == MSRPC_BIND:
+			if uuidNDR64 in [bind['ctx_items'][i].ts() for i in range(bind['ctx_num'])]:
+				preparedResponses[uuidNDR32] = CtxItemResult(2, 2, uuidEmpty, 0)
+				preparedResponses[uuidNDR64] = CtxItemResult(0, 0, uuidNDR64, 1)
+				preparedResponses[uuidTime] = CtxItemResult(3, 3, uuidEmpty, 0)
+			else:
+				preparedResponses[uuidNDR32] = CtxItemResult(0, 0, uuidNDR32, 2)
+				preparedResponses[uuidNDR64] = CtxItemResult(2, 2, uuidEmpty, 0)
+				preparedResponses[uuidTime] = CtxItemResult(3, 3, uuidEmpty, 0)
+		elif request['type'] == MSRPC_ALTERCTX:
+			preparedResponses[uuidNDR32] = CtxItemResult(0, 0, uuidNDR32, 2)
+		else:
+			raise TypeError('Unknown RPC request type for bind like handler: %s' % response['type'])
 
 		response['ctx_items'] = b''
 		for i in range (0, bind['ctx_num']):
@@ -161,7 +182,7 @@ class handler(rpcBase.rpcBase):
 		request = MSRPCHeader()
 		request['ver_major'] = 5
 		request['ver_minor'] = 0
-		request['type'] = self.packetType['bindReq']
+		request['type'] = MSRPC_BIND
 		request['flags'] = self.packetFlags['firstFrag'] | self.packetFlags['lastFrag'] | self.packetFlags['multiplex']
 		request['call_id'] = self.config['call_id']
 		request['pduData'] = bytes(bind)
