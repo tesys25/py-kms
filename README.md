@@ -10,7 +10,7 @@ py-kms is a port of node-kms by [markedsword](http://forums.mydigitallife.info/m
 # Dependencies
 - Python 2.6 or higher, micropython v1.9 or higher.
 - Python 2.6 needs the "argparse" module installed.
-- Micropython needs libpcre and libffi, and modules in micropythonlib, check section below.
+- Micropython needs libffi, and modules in micropythonlib, check section below.
 
 # Usage
 - To start the server, execute `python server.py [listen_address] [port]`. The default listening address is `0.0.0.0` (all interfaces) and the default port is `1688`.
@@ -19,6 +19,6 @@ py-kms is a port of node-kms by [markedsword](http://forums.mydigitallife.info/m
 
 # Micropython support (unix port only)
 - Micropython v1.9 is necessary since large int support starts here.
-- You need libpcre and libffi.
+- You need libffi.
 - You need some standard library of module. Use `micropython -m upip install -r requirements-micropython.txt` to install.
 - Only unix port is supported. Other platforms don't have some stdlib and performance may be a problem. 

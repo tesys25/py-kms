@@ -1,4 +1,4 @@
-py-kms itself is unlicensed so far, however, these modules have their own
+py-kms itself has no license so far, however, these modules have their own
 license:
 
 xmltok.py from micropython-lib is licensed under MIT license.
