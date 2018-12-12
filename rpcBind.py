@@ -62,8 +62,17 @@ class CtxItemArray:
 		else:
 			return super(CtxItemArray, self).__str__()
 
-	def __repr__(self):
-		return str(self.data)
+	def dump(self, msg=None, indent=0):
+		if msg is None: msg = self.__class__.__name__
+		ind = ' '*indent
+		print("\n%s" % (msg,))
+		item_cnt = int( (len(self) + len(CtxItem()) - 1) / len(CtxItem()) )  # ceiling
+		for i in range(item_cnt):
+			if hasattr(self[i], 'dump'):
+				self[i].dump('%s%s:{' % (ind,i), indent = indent + 4)
+				print("%s}" % ind)
+			else:
+				print("%s%s: {%r}" % (ind,i,self[i]))
 
 	def __getitem__(self, i):
 		return CtxItem(self.data[(len(CtxItem()) * i):])
