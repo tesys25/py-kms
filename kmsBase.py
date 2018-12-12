@@ -118,10 +118,8 @@ class kmsBase:
 	def __init__(self, data, config):
 		self.data = data
 		self.config = config
-
-	def serverLogic(self, kmsRequest):
+		self.dbName = os.path.join(os.path.dirname(__file__), 'clients.db')
 		if self.config['sqlite'] and self.config['dbSupport']:
-			self.dbName = 'clients.db'
 			if not os.path.isfile(self.dbName):
 				# Initialize the database.
 				con = None
@@ -138,6 +136,8 @@ class kmsBase:
 					if con:
 						con.commit()
 						con.close()
+
+	def serverLogic(self, kmsRequest):
 
 		if self.config['debug']:
 			print("KMS Request Bytes:", binascii.b2a_hex(kmsRequest.__bytes__()))
