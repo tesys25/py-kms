@@ -119,7 +119,7 @@ class kmsBase:
 		self.data = data
 		self.config = config
 		self.dbName = os.path.join(os.path.dirname(__file__), 'clients.db')
-		if self.config['sqlite'] and self.config['dbSupport']:
+		if self.config.get('sqlite', False) and self.config.get('dbSupport', False):
 			if not os.path.isfile(self.dbName):
 				# Initialize the database.
 				con = None
